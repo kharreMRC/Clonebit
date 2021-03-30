@@ -7,44 +7,14 @@ public partial class MainWindow
 
 	private global::Gtk.Action Action;
 
-	private global::Gtk.Action AccountAction;
-
-	private global::Gtk.Action loginAction;
-
-	private global::Gtk.Action logoutAction;
-
-	private global::Gtk.Action quitAction;
-
 	protected virtual void Build()
 	{
 		global::Stetic.Gui.Initialize(this);
 		// Widget MainWindow
 		this.UIManager = new global::Gtk.UIManager();
-		global::Gtk.ActionGroup w1 = new global::Gtk.ActionGroup("Default");
+		global::Gtk.ActionGroup w1 = new global::Gtk.ActionGroup("");
 		this.Action = new global::Gtk.Action("Action", null, null, null);
 		w1.Add(this.Action, null);
-        this.AccountAction = new global::Gtk.Action("AccountAction", global::Mono.Unix.Catalog.GetString("Compte"), null, "gtk-dialog-authentication")
-        {
-            ShortLabel = global::Mono.Unix.Catalog.GetString("Compte")
-        };
-        w1.Add(this.AccountAction, null);
-        this.loginAction = new global::Gtk.Action("loginAction", global::Mono.Unix.Catalog.GetString("Connexion"), null, "gtk-connect")
-        {
-            Sensitive = false,
-            ShortLabel = global::Mono.Unix.Catalog.GetString("Connexion")
-        };
-        w1.Add(this.loginAction, null);
-        this.logoutAction = new global::Gtk.Action("logoutAction", global::Mono.Unix.Catalog.GetString("Déconnexion"), null, "gtk-disconnect")
-        {
-            Sensitive = false,
-            ShortLabel = global::Mono.Unix.Catalog.GetString("Déconnexion")
-        };
-        w1.Add(this.logoutAction, null);
-        this.quitAction = new global::Gtk.Action("quitAction", global::Mono.Unix.Catalog.GetString("Quitter"), null, "gtk-quit")
-        {
-            ShortLabel = global::Mono.Unix.Catalog.GetString("Quitter")
-        };
-        w1.Add(this.quitAction, null);
 		this.UIManager.InsertActionGroup(w1, 0);
 		this.AddAccelGroup(this.UIManager.AccelGroup);
 		this.WidthRequest = 1600;

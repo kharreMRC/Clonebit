@@ -1,49 +1,47 @@
-﻿namespace Clonebit
+﻿using System.IO;
+using Newtonsoft.Json;
+
+namespace Clonebit
 {
     public partial class SettingsWindow : Gtk.Window
     {
-        private string[] addresses;
+        Settings settings;
 
-        public SettingsWindow(string[] addresses) :
+        public SettingsWindow() :
                 base(Gtk.WindowType.Toplevel)
         {
             Build();
-            this.addresses = addresses;
-            for (int i = 0; i < addresses.Length; i++)
+
+            string content = File.ReadAllText("settings.json");
+            settings = JsonConvert.DeserializeObject<Settings>(content);
+            
+            for (int i = 0; i < settings.Addresses.Length; i++)
             {
                 stationComboBox.AppendText($"Station {i + 1}");
             }
+            privateKeyEntry.Text = settings.PrivateKeyPath;
+            NFSEntry.Text = settings.NFSPath;
         }
 
         protected void OnStationComboBoxChanged(object sender, System.EventArgs e)
         {
-            switch (stationComboBox.ActiveText)
-            {
-                case "Station 1":
-                    addressEntry.Text = addresses[0];
-                    break;
-                case "Station 2":
-                    addressEntry.Text = addresses[1];
-                    break;
-                case "Station 3":
-                    addressEntry.Text = addresses[2];
-                    break;
-                case "Station 4":
-                    addressEntry.Text = addresses[3];
-                    break;
-                case "Station 5":
-                    addressEntry.Text = addresses[4];
-                    break;
-                case "Station 6":
-                    addressEntry.Text = addresses[5];
-                    break;
-            }
+            addressEntry.Text = settings.Addresses[int.Parse(stationComboBox.ActiveText.Split()[1]) - 1];
+        }
+
+        protected void OnModifyButtonClicked(object sender, System.EventArgs e)
+        {
+            settings.Addresses[int.Parse(stationComboBox.ActiveText.Split()[1]) - 1] = addressEntry.Text;
         }
 
         protected void OnApplyButtonClicked(object sender, System.EventArgs e)
         {
             MainWindow.privateKeyPath = privateKeyEntry.Text;
             MainWindow.NFSPath = NFSEntry.Text;
+            settings.PrivateKeyPath = privateKeyEntry.Text;
+            settings.NFSPath = NFSEntry.Text;
+
+            string content = JsonConvert.SerializeObject(settings);
+            File.WriteAllText("settings.json", content);
         }
     }
 }

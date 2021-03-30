@@ -6,13 +6,13 @@ namespace Clonebit
 	{
 		private global::Gtk.Table mainTable;
 
+		private global::Gtk.Button applyButton;
+
 		private global::Gtk.Frame otherSettingsFrame;
 
 		private global::Gtk.Alignment alignement2;
 
 		private global::Gtk.Table otherSettingsTable;
-
-		private global::Gtk.Button applyButton;
 
 		private global::Gtk.Entry NFSEntry;
 
@@ -36,8 +36,6 @@ namespace Clonebit
 
 		private global::Gtk.Button modifyButton;
 
-		private global::Gtk.Button resetButton;
-
 		private global::Gtk.ComboBox stationComboBox;
 
 		private global::Gtk.Label stationLabel;
@@ -50,10 +48,25 @@ namespace Clonebit
 			this.Title = global::Mono.Unix.Catalog.GetString("Paramètres");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Container child Clonebit.SettingsWindow.Gtk.Container+ContainerChild
-			this.mainTable = new global::Gtk.Table(((uint)(2)), ((uint)(1)), false);
+			this.mainTable = new global::Gtk.Table(((uint)(3)), ((uint)(1)), false);
 			this.mainTable.Name = "mainTable";
 			this.mainTable.RowSpacing = ((uint)(6));
 			this.mainTable.ColumnSpacing = ((uint)(6));
+			// Container child mainTable.Gtk.Table+TableChild
+			this.applyButton = new global::Gtk.Button();
+			this.applyButton.CanFocus = true;
+			this.applyButton.Name = "applyButton";
+			this.applyButton.UseUnderline = true;
+			this.applyButton.Label = global::Mono.Unix.Catalog.GetString("Appliquer");
+			global::Gtk.Image w1 = new global::Gtk.Image();
+			this.applyButton.Image = w1;
+			this.mainTable.Add(this.applyButton);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.mainTable[this.applyButton]));
+			w2.TopAttach = ((uint)(2));
+			w2.BottomAttach = ((uint)(3));
+			w2.XPadding = ((uint)(10));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.otherSettingsFrame = new global::Gtk.Frame();
 			this.otherSettingsFrame.Name = "otherSettingsFrame";
@@ -68,24 +81,10 @@ namespace Clonebit
 			this.alignement2.RightPadding = ((uint)(15));
 			this.alignement2.BottomPadding = ((uint)(15));
 			// Container child alignement2.Gtk.Container+ContainerChild
-			this.otherSettingsTable = new global::Gtk.Table(((uint)(3)), ((uint)(2)), false);
+			this.otherSettingsTable = new global::Gtk.Table(((uint)(2)), ((uint)(2)), false);
 			this.otherSettingsTable.Name = "otherSettingsTable";
 			this.otherSettingsTable.RowSpacing = ((uint)(6));
 			this.otherSettingsTable.ColumnSpacing = ((uint)(6));
-			// Container child otherSettingsTable.Gtk.Table+TableChild
-			this.applyButton = new global::Gtk.Button();
-			this.applyButton.CanFocus = true;
-			this.applyButton.Name = "applyButton";
-			this.applyButton.UseUnderline = true;
-			this.applyButton.Label = global::Mono.Unix.Catalog.GetString("Appliquer");
-			global::Gtk.Image w1 = new global::Gtk.Image();
-			this.applyButton.Image = w1;
-			this.otherSettingsTable.Add(this.applyButton);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.otherSettingsTable[this.applyButton]));
-			w2.TopAttach = ((uint)(2));
-			w2.BottomAttach = ((uint)(3));
-			w2.RightAttach = ((uint)(2));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child otherSettingsTable.Gtk.Table+TableChild
 			this.NFSEntry = new global::Gtk.Entry();
 			this.NFSEntry.CanFocus = true;
@@ -117,7 +116,7 @@ namespace Clonebit
 			this.privateKeyEntry = new global::Gtk.Entry();
 			this.privateKeyEntry.CanFocus = true;
 			this.privateKeyEntry.Name = "privateKeyEntry";
-			this.privateKeyEntry.Text = global::Mono.Unix.Catalog.GetString("/home/user/.ssh/id_ed25519");
+			this.privateKeyEntry.Text = global::Mono.Unix.Catalog.GetString("/home/kharre/.ssh/id_ed25519");
 			this.privateKeyEntry.IsEditable = true;
 			this.privateKeyEntry.InvisibleChar = '●';
 			this.otherSettingsTable.Add(this.privateKeyEntry);
@@ -161,7 +160,7 @@ namespace Clonebit
 			this.alignement1.RightPadding = ((uint)(15));
 			this.alignement1.BottomPadding = ((uint)(15));
 			// Container child alignement1.Gtk.Container+ContainerChild
-			this.stationTable = new global::Gtk.Table(((uint)(2)), ((uint)(4)), false);
+			this.stationTable = new global::Gtk.Table(((uint)(2)), ((uint)(3)), false);
 			this.stationTable.Name = "stationTable";
 			this.stationTable.RowSpacing = ((uint)(6));
 			this.stationTable.ColumnSpacing = ((uint)(6));
@@ -175,7 +174,7 @@ namespace Clonebit
 			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.stationTable[this.addButton]));
 			w10.TopAttach = ((uint)(1));
 			w10.BottomAttach = ((uint)(2));
-			w10.RightAttach = ((uint)(4));
+			w10.RightAttach = ((uint)(3));
 			// Container child stationTable.Gtk.Table+TableChild
 			this.addressEntry = new global::Gtk.Entry();
 			this.addressEntry.CanFocus = true;
@@ -198,30 +197,16 @@ namespace Clonebit
 			this.modifyButton.Image = w12;
 			this.stationTable.Add(this.modifyButton);
 			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.stationTable[this.modifyButton]));
-			w13.LeftAttach = ((uint)(3));
-			w13.RightAttach = ((uint)(4));
+			w13.LeftAttach = ((uint)(2));
+			w13.RightAttach = ((uint)(3));
 			w13.XOptions = ((global::Gtk.AttachOptions)(4));
 			w13.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child stationTable.Gtk.Table+TableChild
-			this.resetButton = new global::Gtk.Button();
-			this.resetButton.CanFocus = true;
-			this.resetButton.Name = "resetButton";
-			this.resetButton.UseUnderline = true;
-			this.resetButton.Label = global::Mono.Unix.Catalog.GetString("Réinitialiser");
-			global::Gtk.Image w14 = new global::Gtk.Image();
-			this.resetButton.Image = w14;
-			this.stationTable.Add(this.resetButton);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.stationTable[this.resetButton]));
-			w15.LeftAttach = ((uint)(2));
-			w15.RightAttach = ((uint)(3));
-			w15.XOptions = ((global::Gtk.AttachOptions)(4));
-			w15.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child stationTable.Gtk.Table+TableChild
 			this.stationComboBox = global::Gtk.ComboBox.NewText();
 			this.stationComboBox.Name = "stationComboBox";
 			this.stationTable.Add(this.stationComboBox);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.stationTable[this.stationComboBox]));
-			w16.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.stationTable[this.stationComboBox]));
+			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.alignement1.Add(this.stationTable);
 			this.stationFrame.Add(this.alignement1);
 			this.stationLabel = new global::Gtk.Label();
@@ -230,17 +215,18 @@ namespace Clonebit
 			this.stationLabel.UseMarkup = true;
 			this.stationFrame.LabelWidget = this.stationLabel;
 			this.mainTable.Add(this.stationFrame);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.mainTable[this.stationFrame]));
-			w19.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.mainTable[this.stationFrame]));
+			w17.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.Add(this.mainTable);
 			if ((this.Child != null))
 			{
 				this.Child.ShowAll();
 			}
 			this.DefaultWidth = 640;
-			this.DefaultHeight = 347;
+			this.DefaultHeight = 363;
 			this.Show();
 			this.stationComboBox.Changed += new global::System.EventHandler(this.OnStationComboBoxChanged);
+			this.modifyButton.Clicked += new global::System.EventHandler(this.OnModifyButtonClicked);
 			this.applyButton.Clicked += new global::System.EventHandler(this.OnApplyButtonClicked);
 		}
 	}

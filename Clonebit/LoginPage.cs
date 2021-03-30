@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.NetworkInformation;
 using System.Threading;
 using Gtk;
 using MySqlConnector;
@@ -34,16 +33,16 @@ namespace Clonebit
 
                 // Add home page
                 MainWindow.mainNotebook.AppendPage(new HomePage(), new Label("Accueil"));
-                MainWindow.mainNotebook.AppendPage(new StationPage("192.168.1.14", 4), new Label("Station 4"));
 
                 // Show all pages and then hide login page
                 MainWindow.mainNotebook.ShowAll();
 
                 // Ping stations, add and show station pages
-                MainWindow.pingThread = new Thread(new ThreadStart(GetStationStatus));
+                MainWindow.pingThread = new Thread(new ThreadStart(MainWindow.GetStationStatus));
                 MainWindow.pingThread.Start();
 
                 MainWindow.logoutItem.Sensitive = true;
+                //MainWindow.refreshItem.Sensitive = true;
             }
             catch (MySqlException)
             {
@@ -62,29 +61,6 @@ namespace Clonebit
             usernameEntry.Text = "";
             passwordEntry.Text = "";
             databaseEntry.Text = "";
-        }
-
-        private void GetStationStatus()
-        {
-            //addresses.AsParallel().ForAll(address => Console.WriteLine(address.Key + ":" + PingStation(address.Key)));
-            for (var i = 0; i < MainWindow.addresses.Length; i++)
-            {
-                Console.WriteLine(MainWindow.addresses[i] + ":" + PingStation(MainWindow.addresses[i]));
-                if (PingStation(MainWindow.addresses[i]).Equals("Success"))
-                {
-                    MainWindow.mainNotebook.AppendPage(
-                        new StationPage(MainWindow.addresses[i], (byte)(i + 1)),
-                        new Label($"Station {i + 1}"));
-                    MainWindow.mainNotebook.ShowAll();
-                }
-            }
-        }
-
-        private string PingStation(string address)
-        {
-            Ping pingRequest = new Ping();
-            PingReply pingReply = pingRequest.Send(address, 2);
-            return pingReply.Status.ToString();
         }
 
         //// Unused

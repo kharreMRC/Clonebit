@@ -14,10 +14,9 @@ namespace Clonebit
     public partial class HomePage : Bin
     {
         // TODO
-        // Page de paramètres dans la barre menu pour régler IP stations, emplacement clé privée
         // Inscrire log dans BDD à partir de /media/usblog.json
-        // Vérification clé usb au démarrage app et avant la duplication
-        // Bouton rafraîchir pour actualiser les stations/usb branchés
+
+        public static ListStore stationStore;
 
         private FileType fileType;
 
@@ -38,11 +37,35 @@ namespace Clonebit
             // List selected stations
             TreeViewColumn stationColumn = new TreeViewColumn
             {
-                Title = "Stations"
+                Title = "N° station"
             };
+            CellRendererText stationCell = new CellRendererText();
+            stationColumn.PackStart(stationCell, true);
+
+            TreeViewColumn addressColumn = new TreeViewColumn
+            {
+                Title = "Adresse IPv4" 
+            };
+            CellRendererText addressCell = new CellRendererText();
+            addressColumn.PackStart(addressCell, true);
+
+            TreeViewColumn usbColumn = new TreeViewColumn
+            {
+                Title = "USB branché"
+            };
+            CellRendererText usbCell = new CellRendererText();
+            usbColumn.PackStart(usbCell, true);
+
             stationTreeView.AppendColumn(stationColumn);
-            ListStore listStore = new ListStore(typeof(string));
-            stationTreeView.Model = listStore;
+            stationTreeView.AppendColumn(addressColumn);
+            stationTreeView.AppendColumn(usbColumn);
+
+            stationColumn.AddAttribute(stationCell, "text", 0);
+            addressColumn.AddAttribute(addressCell, "text", 1);
+            usbColumn.AddAttribute(usbCell, "text", 2);
+
+            stationStore = new ListStore(typeof(string), typeof(string), typeof(string) );
+            stationTreeView.Model = stationStore;
         }
 
         protected void OnOpenButtonClicked(object sender, EventArgs e)
@@ -86,7 +109,7 @@ namespace Clonebit
                     FileInfo fileInfo = new FileInfo(fcd.Filename);
 
                     // Set file values
-                    //fileFingerprint = GetFileFingerprint(fileInfo.FullName);
+                    fileFingerprint = GetFileFingerprint(fileInfo.FullName);
                     fullFileName = fileInfo.FullName;
                     shortFileName = GetFileName(fullFileName);
                     fileSize = fileInfo.Length;
@@ -98,7 +121,7 @@ namespace Clonebit
                     parentRepositoryInfoLabel.Text = SetItalic(fileInfo.DirectoryName + "/");
                     lastAccessDateInfoLabel.Text = SetItalic(fileInfo.LastAccessTime.ToString());
                     lastWriteDateInfoLabel.Text = SetItalic(fileInfo.LastWriteTime.ToString());
-                    //fingerprintInfoLabel.Text = SetItalic(fileFingerprint);
+                    fingerprintInfoLabel.Text = SetItalic(fileFingerprint);
                 }
 
                 // Apply tags
@@ -151,32 +174,33 @@ namespace Clonebit
 
         protected async void OnDuplicateButtonClicked(object sender, EventArgs e)
         {
-            try
+            // Blank space is important because arguments will be added
+            command = new StringBuilder("/root/bin/start-copy.sh ");
+
+            // Filter file name
+            string message;
+            if (shortFileName.Contains(" ") || shortFileName.Contains("'"))
             {
-                string message;
+                message = "Le nom du fichier spécifié contient des caractères interdits. " +
+                          "En conséquence, le nom du fichier va être automatiquement modifié au lancement de la duplication.\n" +
+                          "La duplication est sur le point de débuter. Continuer ?";
+            }
+            else
+            {
+                message = "La duplication est sur le point de débuter. Continuer ?";
+            }
 
-                // Blank space is important because arguments will be added
-                command = new StringBuilder("/root/bin/start-copy.sh ");
-
-                // Filter file name
-                if (shortFileName.Contains(" ") || shortFileName.Contains("'"))
+            using (var duplicationDialog = new MessageDialog(null,
+                                                     DialogFlags.DestroyWithParent,
+                                                     MessageType.Warning,
+                                                     ButtonsType.YesNo,
+                                                     message))
+            {
+                duplicationDialog.Title = "Confirmation de la duplication";
+                if ((ResponseType)duplicationDialog.Run() == ResponseType.Yes)
                 {
-                    message = "Le nom du fichier spécifié contient des caractères interdits. " +
-                              "En conséquence, le nom du fichier va automatiquement être modifié au lancement de la duplication.\n" +
-                              "La duplication est sur le point de débuter. Continuer ?";
-                }
-                else
-                {
-                    message = "La duplication est sur le point de débuter. Continuer ?";
-                }
-                using (var duplicationDialog = new MessageDialog(null,
-                                                         DialogFlags.DestroyWithParent,
-                                                         MessageType.Warning,
-                                                         ButtonsType.YesNo,
-                                                         message))
-                {
-                    duplicationDialog.Title = "Confirmation de la duplication";
-                    if ((ResponseType)duplicationDialog.Run() == ResponseType.Yes)
+                    duplicationDialog.Destroy();
+                    try
                     {
                         switch (fileType)
                         {
@@ -195,48 +219,66 @@ namespace Clonebit
                                 File.Copy(fullFileName, $"{MainWindow.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}", true);
                                 break;
                         }
-                        //try
-                        //{
-                        //    // THERE IS A PROBLEM HERE
-                        //    //await AsyncExecuteSQLCommand($"INSERT INTO file VALUES (0, '{fileFingerprint}', '{PurifyFileName(fullFileName)}', {fileSize});");
-                        //}
-                        //catch (Exception) { }
                     }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("[SERVER] Copy error");
+                    }
+
+                    // Write event in database
+                    try
+                    {
+                        // THERE IS A PROBLEM HERE ON PRODUCTION ENVIRONMENT
+                        await AsyncExecuteSQLCommand($"INSERT INTO file VALUES (0, '{fileFingerprint}', '{PurifyFileName(fullFileName)}', {fileSize});");
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("[BDD] Logging error");
+                    }
+
+                    // Finish building bash command
+                    for (var i = 0; i < MainWindow.addresses.Length; i++)
+                    {
+                        var stationNo = i + 11;
+                        if (PingStation(new StringBuilder($"192.168.1.{stationNo.ToString()}").ToString()).Equals("Success"))
+                        {
+                            Console.WriteLine($"[PING] {MainWindow.addresses[i]} success");
+                            command.Append($"{stationNo.ToString()} ");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[PING] {MainWindow.addresses[i]} fail");
+                        }
+                    }
+
+                    // Run duplication via SSH
+                    var connectionInfo = new ConnectionInfo("192.168.1.1", 22, "root", new AuthenticationMethod[]
+                    {
+                            new PrivateKeyAuthenticationMethod("root", new PrivateKeyFile[] { new PrivateKeyFile(MainWindow.privateKeyPath, "") })
+                    });
+                    using (var client = new SshClient(connectionInfo))
+                    {
+                        try
+                        {
+                            client.Connect();
+                            Console.WriteLine($"\n[DEBUG] {command}");
+                            Console.WriteLine("\n========== SERVER ==========\n" +
+                                             $"{client.CreateCommand(command.ToString()).Execute()}" +
+                                              "============================");
+                            client.Disconnect();
+                            Console.WriteLine("\n[SERVER] Disconnected");
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("\n[SERVER] SSH error");
+                        }
+                    }
+                    command.Clear();
+                }
+                else
+                {
                     duplicationDialog.Destroy();
                 }
-
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // METTRE CE QUI SUIT DANS LE IF DIALOG.RUN
-                // Sinon le code est exécuté alors que l'utilisateur peut dire non
-
-                // Finish building bash command
-                for (var i = 0; i < MainWindow.selectedStation.Length; i++)
-                {
-                    var stationNo = i + 11;
-                    if (MainWindow.selectedStation[i] && PingStation(new StringBuilder($"192.168.1.{stationNo.ToString()}").ToString()).Equals("Success"))
-                    {
-                        //Console.WriteLine(PingStation(new StringBuilder($"192.168.1.{stationNo.ToString()}").ToString()));
-                        command.Append($"{stationNo.ToString()} ");
-                    }
-                }
-
-                // Run duplication via SSH
-                var connectionInfo = new ConnectionInfo("192.168.1.1", 22, "root", new AuthenticationMethod[]
-                {
-                    new PrivateKeyAuthenticationMethod("root", new PrivateKeyFile[] { new PrivateKeyFile(MainWindow.privateKeyPath, "") })
-                });
-                using (var client = new SshClient(connectionInfo))
-                {
-                    client.Connect();
-                    Console.WriteLine(command);
-                    Console.WriteLine(client.CreateCommand(command.ToString()).Execute());
-                    client.Disconnect();
-                }
-                command.Clear();
-                Console.WriteLine("Correctly disconnected");
-            }
-            catch (MySqlException)
-            {
             }
         }
 
@@ -287,9 +329,9 @@ namespace Clonebit
 
         private string GetFileFingerprint(string path)
         {
-            using (SHA256 sha256 = SHA256.Create())
+            using (MD5 md5 = MD5.Create())
             {
-                byte[] bytes = sha256.ComputeHash(File.ReadAllBytes(path));
+                byte[] bytes = md5.ComputeHash(File.ReadAllBytes(path));
                 StringBuilder stringBuilder = new StringBuilder();
                 for (var i = 0; i < bytes.Length; i++)
                 {

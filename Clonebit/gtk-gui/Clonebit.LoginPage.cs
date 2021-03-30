@@ -62,7 +62,7 @@ namespace Clonebit
 			this.databaseEntry = new global::Gtk.Entry();
 			this.databaseEntry.CanFocus = true;
 			this.databaseEntry.Name = "databaseEntry";
-			this.databaseEntry.Text = global::Mono.Unix.Catalog.GetString("storage_duplication");
+			this.databaseEntry.Text = global::Mono.Unix.Catalog.GetString("duplication");
 			this.databaseEntry.IsEditable = true;
 			this.databaseEntry.InvisibleChar = '●';
 			this.loginTable.Add(this.databaseEntry);
