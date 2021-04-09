@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.NetworkInformation;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Clonebit;
 using Gtk;
 using MySqlConnector;
@@ -11,50 +13,37 @@ using Newtonsoft.Json;
 public partial class MainWindow : Window
 {
     // Ur so bad its insane
-    public static Notebook mainNotebook;
+    public static VBox vBox;
     public static MenuBar menuBar;
     public static MenuItem logoutItem;
     public static MenuItem refreshItem;
 
+    public static Clonebit.Settings settings;
+
     public static MySqlConnection connector;
     public static Thread pingThread;
 
+    public static Dictionary<string, string> stationLog;
+    public static Dictionary<string, string> usbLog;
     public static Dictionary<string, string> usbStatus;
-
-    public static string[] addresses;
-
-    public static string privateKeyPath;
-    public static string NFSPath;
-
-    public static bool[] activeStation;
-    public static bool[] selectedStation;
 
     public MainWindow() : base(WindowType.Toplevel)
     {
         Build();
 
+        string content = File.ReadAllText("settings.json");
+        settings = JsonConvert.DeserializeObject<Clonebit.Settings>(content);
+
+        stationLog = new Dictionary<string, string>();
         usbStatus = new Dictionary<string, string>();
 
-        privateKeyPath = "/home/kharre/.ssh/id_ed25519";
-        NFSPath = "/media/shared_folder/";
-        activeStation = new bool[6];
-        selectedStation = new bool[6];
-        addresses = new string[]
+        for (var i = 0; i < settings.Addresses.Length; i++)
         {
-            "192.168.1.11",
-            "192.168.1.12",
-            "192.168.1.13",
-            "192.168.1.14",
-            "192.168.1.15",
-            "192.168.1.16"
-        };
-
-        for (int i = 0; i < addresses.Length; i++)
-        {
-            usbStatus.Add(addresses[i], "REMOVED");
+            stationLog.Add(settings.Addresses[i], "");
+            usbStatus.Add(settings.Addresses[i], "NONE");
         }
 
-        VBox vBox = new VBox(false, 0);
+        vBox = new VBox(false, 0);
         Add(vBox);
         vBox.ShowAll();
 
@@ -84,19 +73,15 @@ public partial class MainWindow : Window
         accountMenu.Append(new SeparatorMenuItem());
         accountMenu.Append(quitItem);
         accountItem.Submenu = accountMenu;
-        
+
         menuBar.Append(accountItem);
         menuBar.Append(settingsItem);
         menuBar.Append(refreshItem);
-        this.Add(menuBar);
+        Add(menuBar);
         menuBar.ShowAll();
 
-        mainNotebook = new Notebook();
-        vBox.PackEnd(mainNotebook, true, true, 0);
-        mainNotebook.TabPos = PositionType.Left;
-        mainNotebook.AppendPage(new LoginPage(), new Label("Connexion"));
-        this.Add(mainNotebook);
-        mainNotebook.ShowAll();
+        vBox.PackEnd(new LoginPage(), true, true, 0);
+        vBox.ShowAll();
     }
 
     protected void OnDeleteEvent(object sender, DeleteEventArgs a)
@@ -118,25 +103,22 @@ public partial class MainWindow : Window
 
     protected void OnLogoutActivated(object sender, EventArgs e)
     {
-        for (int i = 0; i < addresses.Length; i++)
+        for (int i = 0; i < settings.Addresses.Length; i++)
         {
-            usbStatus[addresses[i]] = "REMOVED";
+            usbStatus[settings.Addresses[i]] = "NONE";
         }
         HomePage.stationStore.Clear();
 
-        byte pageNo = (byte)mainNotebook.NPages;
-        for (var i = 0; i < pageNo; i++)
-        {
-            // Delete current page at position 1
-            mainNotebook.RemovePage(0);
-        }
+        // Destroy home page and add login page
+        vBox.Children[1].Destroy();
 
-        // Show login page
-        mainNotebook.AppendPage(new LoginPage(), new Label("Connexion"));
-        mainNotebook.ShowAll();
+        vBox.PackEnd(new LoginPage(), true, true, 0);
+        vBox.ShowAll();
 
         logoutItem.Sensitive = false;
         refreshItem.Sensitive = false;
+
+        SettingsWindow.logStatus = false;
 
         pingThread.Abort();
 
@@ -154,41 +136,84 @@ public partial class MainWindow : Window
     {
     }
 
-    public static void GetStationStatus()
+    public static async Task AsyncExecuteSQLCommand(string cmd)
+    {
+        var sqlCommand = new MySqlCommand(cmd, connector);
+        await sqlCommand.ExecuteNonQueryAsync();
+    }
+
+    public static void ExecuteSQLCommand(string cmd)
+    {
+        var sqlCommand = new MySqlCommand(cmd, connector);
+        sqlCommand.ExecuteNonQuery();
+    }
+
+    public static async void GetStationStatus()
     {
         //addresses.AsParallel().ForAll(address => Console.WriteLine(address.Key + ":" + PingStation(address.Key)));
-        GetUSBStatus();
-        for (var i = 0; i < addresses.Length; i++)
+        for (var i = 0; i < settings.Addresses.Length; i++)
         {
-            Console.WriteLine($"[PING] {addresses[i]} : {PingStation(addresses[i])}");
-            if (PingStation(addresses[i]).Equals("Success"))
+            var stationNo = i + 11;
+            var logPath = new StringBuilder($"{settings.LogsPath}usblog_{stationNo.ToString()}.json").ToString();
+            Console.WriteLine($"[PING] {settings.Addresses[i]} : {PingStation(settings.Addresses[i])}");
+
+            if (PingStation(settings.Addresses[i]).Equals("Success"))
             {
-                HomePage.stationStore.AppendValues((i + 1).ToString(), addresses[i], usbStatus[addresses[i]]);
-                mainNotebook.AppendPage(
-                    new StationPage(addresses[i], (byte)(i + 1)),
-                    new Label($"Station {i + 1}"));
-                mainNotebook.ShowAll();
+                GetUSBStatus(logPath, settings.Addresses[i]);
+                await AsyncExecuteSQLCommand($"UPDATE duplication_station SET ds_lastusbserial='{GetUSBSerial(logPath, settings.Addresses[i])}' WHERE ds_ip='{settings.Addresses[i]}';");
+                HomePage.stationStore.AppendValues((i + 1).ToString(), settings.Addresses[i], usbStatus[settings.Addresses[i]]);
             }
         }
+
         Console.Write("\n");
     }
 
-    public static void GetUSBStatus()
+    public static void GetUSBStatus(string logPath, string address)
     {
-        string content = File.ReadAllText("/media/shared_folder/LOG/usblog_14.json");
-
-        var logData = JsonConvert.DeserializeObject<Dictionary<string, string>[]>(content);
-
-        for (int i = 0; i < logData.Length; i++)
+        try
         {
-            usbStatus[logData[i]["IP"]] = logData[i]["Action"];
-        }
+            string content = File.ReadAllText(logPath);
+            var logData = JsonConvert.DeserializeObject<Dictionary<string, string>[]>(content);
 
-        foreach (var usb in usbStatus)
-        {
-            Console.WriteLine($"[USB] {usb.Key} : {usb.Value}");
+            if (logData[logData.Length - 1]["Action"].Equals("ADDED"))
+            {
+                usbStatus[address] = "Oui";
+                Console.WriteLine($"[USB] {address} : OK");
+            }
+            else
+            {
+                usbStatus[address] = "Non";
+                Console.WriteLine($"[USB] {address} : NO USB");
+            }
         }
-        Console.Write("\n");
+        catch (Exception)
+        {
+            usbStatus[address] = "Aucune trace de stockage USB";
+            Console.WriteLine($"[USB] {address} : NO LOG");
+        }
+    }
+
+    public static string GetUSBSerial(string logPath, string address)
+    {
+        try
+        {
+            string content = File.ReadAllText(logPath);
+            var logData = JsonConvert.DeserializeObject<Dictionary<string, string>[]>(content);
+            return logData[logData.Length - 1]["SerialNumber"];
+        }
+        catch (Exception)
+        {
+            var serial = "";
+            using (var cmd = new MySqlCommand($"SELECT ds_lastusbserial FROM duplication_station WHERE ds_ip='{address}';", connector))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    serial = reader.GetString(0);
+                }
+            }
+            return serial;
+        }
     }
 
     public static string PingStation(string address)
@@ -197,4 +222,11 @@ public partial class MainWindow : Window
         PingReply pingReply = pingRequest.Send(address, 2);
         return pingReply.Status.ToString();
     }
+
+    // Unused
+    //public static async Task AsyncExecuteSQLCommand(string cmd)
+    //{
+    //    var sqlCommand = new MySqlCommand(cmd, connector);
+    //    await sqlCommand.ExecuteNonQueryAsync();
+    //}
 }

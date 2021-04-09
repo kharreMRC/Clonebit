@@ -3,9 +3,7 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Gtk;
-using MySqlConnector;
 using Renci.SshNet;
 
 namespace Clonebit
@@ -13,9 +11,6 @@ namespace Clonebit
     [System.ComponentModel.ToolboxItem(true)]
     public partial class HomePage : Bin
     {
-        // TODO
-        // Inscrire log dans BDD à partir de /media/usblog.json
-
         public static ListStore stationStore;
 
         private FileType fileType;
@@ -44,7 +39,7 @@ namespace Clonebit
 
             TreeViewColumn addressColumn = new TreeViewColumn
             {
-                Title = "Adresse IPv4" 
+                Title = "Adresse IPv4"
             };
             CellRendererText addressCell = new CellRendererText();
             addressColumn.PackStart(addressCell, true);
@@ -101,7 +96,7 @@ namespace Clonebit
                     parentRepositoryInfoLabel.Text = SetItalic(directoryInfo.Parent + "/");
                     lastAccessDateInfoLabel.Text = SetItalic(directoryInfo.LastAccessTime.ToString());
                     lastWriteDateInfoLabel.Text = SetItalic(directoryInfo.LastWriteTime.ToString());
-                    fingerprintInfoLabel.Text = SetItalic("Empreinte SHA256 indisponible");
+                    fingerprintInfoLabel.Text = SetItalic("Empreinte MD5 indisponible");
                 }
                 // ... or a file
                 else
@@ -157,12 +152,6 @@ namespace Clonebit
                     fileDestination = "TO_CP";
                     openButton.Sensitive = true;
                     break;
-                case "Fichier (support d'amorçage)":
-                    fileType = FileType.DDFile;
-                    fileChooserAction = FileChooserAction.Open;
-                    fileDestination = "TO_DD";
-                    openButton.Sensitive = true;
-                    break;
                 default:
                     // By default, everything is unsensitive
                     openButton.Sensitive = false;
@@ -172,10 +161,10 @@ namespace Clonebit
             }
         }
 
-        protected async void OnDuplicateButtonClicked(object sender, EventArgs e)
+        protected void OnDuplicateButtonClicked(object sender, EventArgs e)
         {
-            // Blank space is important because arguments will be added
-            command = new StringBuilder("/root/bin/start-copy.sh ");
+            // /root/start_multicast.sh [filepath]
+            command = new StringBuilder("/root/start_multicast.sh /nfs/shared_folder/TO_CP/");
 
             // Filter file name
             string message;
@@ -189,103 +178,124 @@ namespace Clonebit
             {
                 message = "La duplication est sur le point de débuter. Continuer ?";
             }
-
-            using (var duplicationDialog = new MessageDialog(null,
-                                                     DialogFlags.DestroyWithParent,
-                                                     MessageType.Warning,
-                                                     ButtonsType.YesNo,
-                                                     message))
+            var duplicationDialog = new MessageDialog(null,
+                                                      DialogFlags.DestroyWithParent,
+                                                      MessageType.Warning,
+                                                      ButtonsType.YesNo,
+                                                      message)
             {
-                duplicationDialog.Title = "Confirmation de la duplication";
-                if ((ResponseType)duplicationDialog.Run() == ResponseType.Yes)
+                Title = "Confirmation de la duplication"
+            };
+            if ((ResponseType)duplicationDialog.Run() == ResponseType.Yes)
+            {
+                Sensitive = false;
+                duplicationDialog.Destroy();
+                try
                 {
-                    duplicationDialog.Destroy();
+                    switch (fileType)
+                    {
+                        case FileType.File:
+                            // Copy file to NFS
+                            command.Append(shortFileName);
+                            File.Copy(fullFileName, $"{MainWindow.settings.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}", true);
+                            break;
+                        case FileType.Folder:
+                            CopyFolder(fullFileName, $"{MainWindow.settings.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}");
+                            break;
+                    }
+                }
+                catch (Exception)
+                {
+                    using (var messageDialog = new MessageDialog(null,
+                                                                 DialogFlags.DestroyWithParent,
+                                                                 MessageType.Error,
+                                                                 ButtonsType.Ok,
+                                                                 "La copie du fichier sur le NFS a échoué."))
+                    {
+                        messageDialog.Title = "Erreur copie";
+                        messageDialog.Run();
+                        messageDialog.Destroy();
+                    }
+                    Console.WriteLine("[SERVER] Cannot copy the file to the NFS");
+                }
+
+                // Write event in database
+                try
+                {
+                    // THERE IS A PROBLEM HERE ON PRODUCTION ENVIRONMENT
+                    MainWindow.ExecuteSQLCommand($"INSERT INTO file VALUES (0, '{fileFingerprint}', '{PurifyFileName(fullFileName)}', {fileSize});");
+                }
+                catch (Exception)
+                {
+                    using (var messageDialog = new MessageDialog(null,
+                                                                 DialogFlags.DestroyWithParent,
+                                                                 MessageType.Error,
+                                                                 ButtonsType.Ok,
+                                                                 "L'écriture des évènements en base de données a échoué."))
+                    {
+                        messageDialog.Title = "Erreur base de données";
+                        messageDialog.Run();
+                        messageDialog.Destroy();
+                    }
+                    Console.WriteLine("[BDD] Cannot insert logs in database");
+                }
+
+                // Run duplication via SSH
+                var connectionInfo = new ConnectionInfo("192.168.1.1", 22, "root", new AuthenticationMethod[]
+                {
+                            new PrivateKeyAuthenticationMethod("root", new PrivateKeyFile[] { new PrivateKeyFile(MainWindow.settings.PrivateKeyPath, "") })
+                });
+                using (var client = new SshClient(connectionInfo))
+                {
                     try
                     {
-                        switch (fileType)
+                        client.Connect();
+                        Console.WriteLine("\n[SSH] Successful login to the server");
+                        Console.WriteLine($"\n[SSH] Command used : {command}\n");
+                        Console.WriteLine("========== SERVER ==========");
+                        var SSHCommand = client.CreateCommand(command.ToString());
+
+                        // Get continuously logs from the server after running the command
+                        var exitCode = SSHCommand.BeginExecute();
+                        using (var streamReader = new StreamReader(SSHCommand.OutputStream, Encoding.UTF8, true, 1024, true))
                         {
-                            case FileType.File:
-                                // Build bash command
-                                command.Append("cp ");
-                                // Copy file to NFS
-                                File.Copy(fullFileName, $"{MainWindow.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}", true);
-                                break;
-                            case FileType.Folder:
-                                command.Append("cp ");
-                                CopyFolder(fullFileName, $"{MainWindow.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}");
-                                break;
-                            case FileType.DDFile:
-                                command.Append("dd ");
-                                File.Copy(fullFileName, $"{MainWindow.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}", true);
-                                break;
+                            while (!exitCode.IsCompleted || !streamReader.EndOfStream)
+                            {
+                                string currentLine = streamReader.ReadLine();
+                                if (currentLine != null)
+                                {
+                                    Console.WriteLine(currentLine);
+                                }
+                            }
                         }
+                        SSHCommand.EndExecute(exitCode);
+
+                        Console.WriteLine("\n============================");
+                        client.Disconnect();
+                        Console.WriteLine("\n[SSH] Successful logout from the server");
                     }
                     catch (Exception)
                     {
-                        Console.WriteLine("[SERVER] Copy error");
-                    }
-
-                    // Write event in database
-                    try
-                    {
-                        // THERE IS A PROBLEM HERE ON PRODUCTION ENVIRONMENT
-                        await AsyncExecuteSQLCommand($"INSERT INTO file VALUES (0, '{fileFingerprint}', '{PurifyFileName(fullFileName)}', {fileSize});");
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine("[BDD] Logging error");
-                    }
-
-                    // Finish building bash command
-                    for (var i = 0; i < MainWindow.addresses.Length; i++)
-                    {
-                        var stationNo = i + 11;
-                        if (PingStation(new StringBuilder($"192.168.1.{stationNo.ToString()}").ToString()).Equals("Success"))
+                        using (var messageDialog = new MessageDialog(null,
+                                                                 DialogFlags.DestroyWithParent,
+                                                                 MessageType.Error,
+                                                                 ButtonsType.Ok,
+                                                                 "La connexion SSH à l'ordonnanceur a échoué."))
                         {
-                            Console.WriteLine($"[PING] {MainWindow.addresses[i]} success");
-                            command.Append($"{stationNo.ToString()} ");
+                            messageDialog.Title = "Erreur connexion SSH";
+                            messageDialog.Run();
+                            messageDialog.Destroy();
                         }
-                        else
-                        {
-                            Console.WriteLine($"[PING] {MainWindow.addresses[i]} fail");
-                        }
+                        Console.WriteLine("\n[SSH] Cannot connect to the server");
                     }
-
-                    // Run duplication via SSH
-                    var connectionInfo = new ConnectionInfo("192.168.1.1", 22, "root", new AuthenticationMethod[]
-                    {
-                            new PrivateKeyAuthenticationMethod("root", new PrivateKeyFile[] { new PrivateKeyFile(MainWindow.privateKeyPath, "") })
-                    });
-                    using (var client = new SshClient(connectionInfo))
-                    {
-                        try
-                        {
-                            client.Connect();
-                            Console.WriteLine($"\n[DEBUG] {command}");
-                            Console.WriteLine("\n========== SERVER ==========\n" +
-                                             $"{client.CreateCommand(command.ToString()).Execute()}" +
-                                              "============================");
-                            client.Disconnect();
-                            Console.WriteLine("\n[SERVER] Disconnected");
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("\n[SERVER] SSH error");
-                        }
-                    }
-                    command.Clear();
                 }
-                else
-                {
-                    duplicationDialog.Destroy();
-                }
+                command.Clear();
+                Sensitive = true;
             }
-        }
-
-        private async Task AsyncExecuteSQLCommand(string cmd)
-        {
-            var sqlCommand = new MySqlCommand(cmd, MainWindow.connector);
-            await sqlCommand.ExecuteNonQueryAsync();
+            else
+            {
+                duplicationDialog.Destroy();
+            }
         }
 
         private void CopyFolder(string source, string target)
@@ -306,7 +316,7 @@ namespace Clonebit
         private string PingStation(string address)
         {
             Ping pingRequest = new Ping();
-            PingReply pingReply = pingRequest.Send(address, 2);
+            PingReply pingReply = pingRequest.Send(address);
             return pingReply.Status.ToString();
         }
 
@@ -357,14 +367,14 @@ namespace Clonebit
         }
 
         // Unused
-        private string GetParentRepository(string filename)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (var i = 0; i < filename.Split('/').Length - 2; i++)
-            {
-                stringBuilder.Append(fullFileName.Split('/')[i] + "/");
-            }
-            return stringBuilder.ToString();
-        }
+        //private string GetParentRepository(string filename)
+        //{
+        //    StringBuilder stringBuilder = new StringBuilder();
+        //    for (var i = 0; i < filename.Split('/').Length - 2; i++)
+        //    {
+        //        stringBuilder.Append(fullFileName.Split('/')[i] + "/");
+        //    }
+        //    return stringBuilder.ToString();
+        //}
     }
 }

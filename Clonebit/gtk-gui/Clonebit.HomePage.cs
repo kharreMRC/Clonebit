@@ -46,6 +46,16 @@ namespace Clonebit
 
 		private global::Gtk.Label fileLabel;
 
+		private global::Gtk.Frame logFrame;
+
+		private global::Gtk.Alignment alignement5;
+
+		private global::Gtk.ScrolledWindow logGtkScrolledWindow;
+
+		private global::Gtk.TextView logTextView;
+
+		private global::Gtk.Label logLabel;
+
 		private global::Gtk.Frame selectFrame;
 
 		private global::Gtk.Alignment alignement1;
@@ -66,7 +76,7 @@ namespace Clonebit
 
 		private global::Gtk.Alignment alignement4;
 
-		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		private global::Gtk.ScrolledWindow stationGtkScrolledWindow;
 
 		private global::Gtk.TreeView stationTreeView;
 
@@ -121,6 +131,7 @@ namespace Clonebit
 			w4.BottomAttach = ((uint)(2));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.fileFrame = new global::Gtk.Frame();
 			this.fileFrame.Sensitive = false;
@@ -299,10 +310,44 @@ namespace Clonebit
 			this.fileFrame.LabelWidget = this.fileLabel;
 			this.mainTable.Add(this.fileFrame);
 			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.mainTable[this.fileFrame]));
-			w19.TopAttach = ((uint)(2));
-			w19.BottomAttach = ((uint)(3));
-			w19.RightAttach = ((uint)(2));
+			w19.TopAttach = ((uint)(1));
+			w19.BottomAttach = ((uint)(2));
 			w19.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child mainTable.Gtk.Table+TableChild
+			this.logFrame = new global::Gtk.Frame();
+			this.logFrame.Name = "logFrame";
+			this.logFrame.ShadowType = ((global::Gtk.ShadowType)(0));
+			this.logFrame.LabelXalign = 0.5F;
+			this.logFrame.BorderWidth = ((uint)(10));
+			// Container child logFrame.Gtk.Container+ContainerChild
+			this.alignement5 = new global::Gtk.Alignment(0F, 0F, 1F, 1F);
+			this.alignement5.Name = "alignement5";
+			this.alignement5.LeftPadding = ((uint)(15));
+			this.alignement5.TopPadding = ((uint)(15));
+			this.alignement5.RightPadding = ((uint)(15));
+			this.alignement5.BottomPadding = ((uint)(15));
+			// Container child alignement5.Gtk.Container+ContainerChild
+			this.logGtkScrolledWindow = new global::Gtk.ScrolledWindow();
+			this.logGtkScrolledWindow.Name = "logGtkScrolledWindow";
+			this.logGtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child logGtkScrolledWindow.Gtk.Container+ContainerChild
+			this.logTextView = new global::Gtk.TextView();
+			this.logTextView.CanFocus = true;
+			this.logTextView.Name = "logTextView";
+			this.logGtkScrolledWindow.Add(this.logTextView);
+			this.alignement5.Add(this.logGtkScrolledWindow);
+			this.logFrame.Add(this.alignement5);
+			this.logLabel = new global::Gtk.Label();
+			this.logLabel.Name = "logLabel";
+			this.logLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Journalisation</b>");
+			this.logLabel.UseMarkup = true;
+			this.logFrame.LabelWidget = this.logLabel;
+			this.mainTable.Add(this.logFrame);
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.mainTable[this.logFrame]));
+			w23.TopAttach = ((uint)(2));
+			w23.BottomAttach = ((uint)(3));
+			w23.RightAttach = ((uint)(2));
+			w23.XOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.selectFrame = new global::Gtk.Frame();
 			this.selectFrame.Name = "selectFrame";
@@ -331,13 +376,13 @@ namespace Clonebit
 			this.filenameLabel.UseMarkup = true;
 			this.filenameLabel.Selectable = true;
 			this.fileTable.Add(this.filenameLabel);
-			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.fileTable[this.filenameLabel]));
-			w20.TopAttach = ((uint)(1));
-			w20.BottomAttach = ((uint)(2));
-			w20.LeftAttach = ((uint)(2));
-			w20.RightAttach = ((uint)(3));
-			w20.XOptions = ((global::Gtk.AttachOptions)(4));
-			w20.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.fileTable[this.filenameLabel]));
+			w24.TopAttach = ((uint)(1));
+			w24.BottomAttach = ((uint)(2));
+			w24.LeftAttach = ((uint)(2));
+			w24.RightAttach = ((uint)(3));
+			w24.XOptions = ((global::Gtk.AttachOptions)(4));
+			w24.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileTable.Gtk.Table+TableChild
 			this.fileTypeLabel = new global::Gtk.Label();
 			this.fileTypeLabel.Name = "fileTypeLabel";
@@ -345,9 +390,9 @@ namespace Clonebit
 			this.fileTypeLabel.UseMarkup = true;
 			this.fileTypeLabel.Justify = ((global::Gtk.Justification)(1));
 			this.fileTable.Add(this.fileTypeLabel);
-			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.fileTable[this.fileTypeLabel]));
-			w21.XOptions = ((global::Gtk.AttachOptions)(4));
-			w21.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.fileTable[this.fileTypeLabel]));
+			w25.XOptions = ((global::Gtk.AttachOptions)(4));
+			w25.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileTable.Gtk.Table+TableChild
 			this.openButton = new global::Gtk.Button();
 			this.openButton.Sensitive = false;
@@ -355,27 +400,26 @@ namespace Clonebit
 			this.openButton.Name = "openButton";
 			this.openButton.UseUnderline = true;
 			this.openButton.Label = global::Mono.Unix.Catalog.GetString("Ouvrir");
-			global::Gtk.Image w22 = new global::Gtk.Image();
-			w22.Pixbuf = global::Stetic.IconLoader.LoadIcon(this, "gtk-open", global::Gtk.IconSize.Menu);
-			this.openButton.Image = w22;
+			global::Gtk.Image w26 = new global::Gtk.Image();
+			w26.Pixbuf = global::Stetic.IconLoader.LoadIcon(this, "gtk-open", global::Gtk.IconSize.Menu);
+			this.openButton.Image = w26;
 			this.fileTable.Add(this.openButton);
-			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.fileTable[this.openButton]));
-			w23.TopAttach = ((uint)(1));
-			w23.BottomAttach = ((uint)(2));
-			w23.RightAttach = ((uint)(2));
+			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.fileTable[this.openButton]));
+			w27.TopAttach = ((uint)(1));
+			w27.BottomAttach = ((uint)(2));
+			w27.RightAttach = ((uint)(2));
 			// Container child fileTable.Gtk.Table+TableChild
 			this.typeFileComboBox = global::Gtk.ComboBox.NewText();
 			this.typeFileComboBox.AppendText("");
 			this.typeFileComboBox.AppendText(global::Mono.Unix.Catalog.GetString("Fichier"));
 			this.typeFileComboBox.AppendText(global::Mono.Unix.Catalog.GetString("Répertoire"));
-			this.typeFileComboBox.AppendText(global::Mono.Unix.Catalog.GetString("Fichier (support d\'amorçage)"));
 			this.typeFileComboBox.Name = "typeFileComboBox";
 			this.typeFileComboBox.Active = 0;
 			this.fileTable.Add(this.typeFileComboBox);
-			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.fileTable[this.typeFileComboBox]));
-			w24.LeftAttach = ((uint)(1));
-			w24.RightAttach = ((uint)(2));
-			w24.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w28 = ((global::Gtk.Table.TableChild)(this.fileTable[this.typeFileComboBox]));
+			w28.LeftAttach = ((uint)(1));
+			w28.RightAttach = ((uint)(2));
+			w28.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.alignement1.Add(this.fileTable);
 			this.selectFrame.Add(this.alignement1);
 			this.selectLabel = new global::Gtk.Label();
@@ -384,8 +428,8 @@ namespace Clonebit
 			this.selectLabel.UseMarkup = true;
 			this.selectFrame.LabelWidget = this.selectLabel;
 			this.mainTable.Add(this.selectFrame);
-			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.mainTable[this.selectFrame]));
-			w27.BottomAttach = ((uint)(2));
+			global::Gtk.Table.TableChild w31 = ((global::Gtk.Table.TableChild)(this.mainTable[this.selectFrame]));
+			w31.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.stationsFrame = new global::Gtk.Frame();
 			this.stationsFrame.Name = "stationsFrame";
@@ -400,15 +444,17 @@ namespace Clonebit
 			this.alignement4.RightPadding = ((uint)(15));
 			this.alignement4.BottomPadding = ((uint)(15));
 			// Container child alignement4.Gtk.Container+ContainerChild
-			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow();
-			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
-			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
-			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
+			this.stationGtkScrolledWindow = new global::Gtk.ScrolledWindow();
+			this.stationGtkScrolledWindow.HeightRequest = 0;
+			this.stationGtkScrolledWindow.Name = "stationGtkScrolledWindow";
+			this.stationGtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child stationGtkScrolledWindow.Gtk.Container+ContainerChild
 			this.stationTreeView = new global::Gtk.TreeView();
+			this.stationTreeView.HeightRequest = 126;
 			this.stationTreeView.CanFocus = true;
 			this.stationTreeView.Name = "stationTreeView";
-			this.GtkScrolledWindow.Add(this.stationTreeView);
-			this.alignement4.Add(this.GtkScrolledWindow);
+			this.stationGtkScrolledWindow.Add(this.stationTreeView);
+			this.alignement4.Add(this.stationGtkScrolledWindow);
 			this.stationsFrame.Add(this.alignement4);
 			this.stationsLabel = new global::Gtk.Label();
 			this.stationsLabel.Name = "stationsLabel";
@@ -416,10 +462,11 @@ namespace Clonebit
 			this.stationsLabel.UseMarkup = true;
 			this.stationsFrame.LabelWidget = this.stationsLabel;
 			this.mainTable.Add(this.stationsFrame);
-			global::Gtk.Table.TableChild w31 = ((global::Gtk.Table.TableChild)(this.mainTable[this.stationsFrame]));
-			w31.LeftAttach = ((uint)(1));
-			w31.RightAttach = ((uint)(2));
-			w31.XOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w35 = ((global::Gtk.Table.TableChild)(this.mainTable[this.stationsFrame]));
+			w35.LeftAttach = ((uint)(1));
+			w35.RightAttach = ((uint)(2));
+			w35.XOptions = ((global::Gtk.AttachOptions)(4));
+			w35.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add(this.mainTable);
 			if ((this.Child != null))
 			{

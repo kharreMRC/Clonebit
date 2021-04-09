@@ -2,6 +2,6 @@
 {
     public enum FileType
     {
-        File, Folder, DDFile
+        File, Folder
     }
 }

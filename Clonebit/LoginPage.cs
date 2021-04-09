@@ -28,14 +28,18 @@ namespace Clonebit
                 // Login in the database
                 MainWindow.connector.Open();
 
-                // Remove login page
-                MainWindow.mainNotebook.RemovePage(0);
-
-                // Add home page
-                MainWindow.mainNotebook.AppendPage(new HomePage(), new Label("Accueil"));
-
-                // Show all pages and then hide login page
-                MainWindow.mainNotebook.ShowAll();
+                Clonebit.Settings.Serials = new string[GetUSBCount()];
+                using (var cmd = new MySqlCommand("SELECT usb_serial FROM usb_storage;", MainWindow.connector))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var i = 0;
+                    while (reader.Read())
+                    {
+                        Clonebit.Settings.Serials[i] = reader.GetString(0);
+                        i++;
+                    }
+                }
+                SettingsWindow.logStatus = true;
 
                 // Ping stations, add and show station pages
                 MainWindow.pingThread = new Thread(new ThreadStart(MainWindow.GetStationStatus));
@@ -43,6 +47,10 @@ namespace Clonebit
 
                 MainWindow.logoutItem.Sensitive = true;
                 //MainWindow.refreshItem.Sensitive = true;
+
+                MainWindow.vBox.Remove(this);
+                MainWindow.vBox.PackEnd(new HomePage(), true, true, 0);
+                MainWindow.vBox.ShowAll();
             }
             catch (MySqlException)
             {
@@ -63,7 +71,21 @@ namespace Clonebit
             databaseEntry.Text = "";
         }
 
-        //// Unused
+        public int GetUSBCount()
+        {
+            var count = 0;
+            using (var cmd = new MySqlCommand("SELECT count(*) FROM usb_storage;", MainWindow.connector))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    count = reader.GetByte(0);
+                }
+            }
+            return count;
+        }
+
+        // Unused
         //private string GetStringFingerprint(string text)
         //{
         //    using (SHA256 sha256 = SHA256.Create())
@@ -78,7 +100,6 @@ namespace Clonebit
         //    }
         //}
 
-        //// Unused
         //private bool GetFingerprintComparison(string firstFprint, string secondFprint)
         //{
         //    if (firstFprint.Equals(secondFprint))
