@@ -17,8 +17,6 @@ public partial class MainWindow
 		w1.Add(this.Action, null);
 		this.UIManager.InsertActionGroup(w1, 0);
 		this.AddAccelGroup(this.UIManager.AccelGroup);
-		this.WidthRequest = 1600;
-		this.HeightRequest = 900;
 		this.Name = "MainWindow";
 		this.Title = global::Mono.Unix.Catalog.GetString("Clonebit");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));

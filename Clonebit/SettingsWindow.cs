@@ -17,14 +17,14 @@ namespace Clonebit
             }
             else
             {
-                for (int i = 0; i < Clonebit.Settings.Serials.Length; i++)
+                for (int i = 0; i < Clonebit.Settings.Serials.Count; i++)
                 {
                     serialComboBox.AppendText($"Stockage {i + 1}");
                 }
                 stationFrame.Sensitive = false;
                 otherSettingsFrame.Sensitive = false;
             }
-            for (int i = 0; i < MainWindow.settings.Addresses.Length; i++)
+            for (int i = 0; i < MainWindow.settings.Addresses.Count; i++)
             {
                 stationComboBox.AppendText($"Station {i + 1}");
             }
@@ -38,6 +38,12 @@ namespace Clonebit
             addressEntry.Text = MainWindow.settings.Addresses[int.Parse(stationComboBox.ActiveText.Split()[1]) - 1];
         }
 
+        protected void OnAddButtonClicked(object sender, System.EventArgs e)
+        {
+            stationComboBox.AppendText($"Station {MainWindow.settings.Addresses.Count + 1}");
+            MainWindow.settings.Addresses.Add("192.168.1." + (10 + MainWindow.settings.Addresses.Count + 1).ToString());
+        }
+
         protected void OnModifyButtonClicked(object sender, System.EventArgs e)
         {
             MainWindow.settings.Addresses[int.Parse(stationComboBox.ActiveText.Split()[1]) - 1] = addressEntry.Text;
@@ -46,6 +52,13 @@ namespace Clonebit
         protected void OnSerialComboBoxChanged(object sender, System.EventArgs e)
         {
             serialEntry.Text = Clonebit.Settings.Serials[int.Parse(serialComboBox.ActiveText.Split()[1]) - 1];
+        }
+
+        protected void OnSerialButtonClicked(object sender, System.EventArgs e)
+        {
+            serialComboBox.AppendText($"Stockage {Clonebit.Settings.Serials.Count + 1}");
+            Clonebit.Settings.Serials.Add("");
+            MainWindow.ExecuteSQLCommand($"INSERT INTO usb_storage VALUES ({Clonebit.Settings.Serials.Count - 1}, '', 0);");
         }
 
         protected void OnModifySerialButtonClicked(object sender, System.EventArgs e)

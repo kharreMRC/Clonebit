@@ -16,7 +16,6 @@ public partial class MainWindow : Window
     public static VBox vBox;
     public static MenuBar menuBar;
     public static MenuItem logoutItem;
-    public static MenuItem refreshItem;
 
     public static Clonebit.Settings settings;
 
@@ -37,7 +36,13 @@ public partial class MainWindow : Window
         stationLog = new Dictionary<string, string>();
         usbStatus = new Dictionary<string, string>();
 
-        for (var i = 0; i < settings.Addresses.Length; i++)
+        Console.WriteLine(settings.Addresses.Count);
+        foreach (var address in settings.Addresses)
+        {
+            Console.WriteLine(address);
+        }
+
+        for (var i = 0; i < settings.Addresses.Count; i++)
         {
             stationLog.Add(settings.Addresses[i], "");
             usbStatus.Add(settings.Addresses[i], "NONE");
@@ -63,11 +68,6 @@ public partial class MainWindow : Window
         MenuItem settingsItem = new MenuItem("Paramètres");
         settingsItem.Activated += OnSettingsActivated;
 
-        refreshItem = new MenuItem("Actualiser")
-        {
-            Sensitive = false
-        };
-
         Menu accountMenu = new Menu();
         accountMenu.Append(logoutItem);
         accountMenu.Append(new SeparatorMenuItem());
@@ -76,7 +76,6 @@ public partial class MainWindow : Window
 
         menuBar.Append(accountItem);
         menuBar.Append(settingsItem);
-        menuBar.Append(refreshItem);
         Add(menuBar);
         menuBar.ShowAll();
 
@@ -103,7 +102,7 @@ public partial class MainWindow : Window
 
     protected void OnLogoutActivated(object sender, EventArgs e)
     {
-        for (int i = 0; i < settings.Addresses.Length; i++)
+        for (int i = 0; i < settings.Addresses.Count; i++)
         {
             usbStatus[settings.Addresses[i]] = "NONE";
         }
@@ -116,7 +115,6 @@ public partial class MainWindow : Window
         vBox.ShowAll();
 
         logoutItem.Sensitive = false;
-        refreshItem.Sensitive = false;
 
         SettingsWindow.logStatus = false;
 
@@ -150,21 +148,23 @@ public partial class MainWindow : Window
 
     public static async void GetStationStatus()
     {
-        //addresses.AsParallel().ForAll(address => Console.WriteLine(address.Key + ":" + PingStation(address.Key)));
-        for (var i = 0; i < settings.Addresses.Length; i++)
+        for (var i = 0; i < settings.Addresses.Count; i++)
         {
             var stationNo = i + 11;
             var logPath = new StringBuilder($"{settings.LogsPath}usblog_{stationNo.ToString()}.json").ToString();
-            Console.WriteLine($"[PING] {settings.Addresses[i]} : {PingStation(settings.Addresses[i])}");
 
             if (PingStation(settings.Addresses[i]).Equals("Success"))
             {
+                Console.WriteLine($"[PING] {settings.Addresses[i]} : Success");
                 GetUSBStatus(logPath, settings.Addresses[i]);
                 await AsyncExecuteSQLCommand($"UPDATE duplication_station SET ds_lastusbserial='{GetUSBSerial(logPath, settings.Addresses[i])}' WHERE ds_ip='{settings.Addresses[i]}';");
                 HomePage.stationStore.AppendValues((i + 1).ToString(), settings.Addresses[i], usbStatus[settings.Addresses[i]]);
             }
+            else
+            {
+                Console.WriteLine($"[PING] {settings.Addresses[i]} : Fail");
+            }
         }
-
         Console.Write("\n");
     }
 
@@ -188,7 +188,7 @@ public partial class MainWindow : Window
         }
         catch (Exception)
         {
-            usbStatus[address] = "Aucune trace de stockage USB";
+            usbStatus[address] = "Aucun journal";
             Console.WriteLine($"[USB] {address} : NO LOG");
         }
     }
@@ -212,7 +212,7 @@ public partial class MainWindow : Window
                     serial = reader.GetString(0);
                 }
             }
-            return serial;
+            return "";
         }
     }
 

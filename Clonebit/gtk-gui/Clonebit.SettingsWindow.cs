@@ -85,8 +85,6 @@ namespace Clonebit
 			w2.TopAttach = ((uint)(3));
 			w2.BottomAttach = ((uint)(4));
 			w2.XPadding = ((uint)(10));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.otherSettingsFrame = new global::Gtk.Frame();
 			this.otherSettingsFrame.Name = "otherSettingsFrame";
@@ -192,7 +190,6 @@ namespace Clonebit
 			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.mainTable[this.otherSettingsFrame]));
 			w11.TopAttach = ((uint)(2));
 			w11.BottomAttach = ((uint)(3));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.serialFrame = new global::Gtk.Frame();
@@ -266,8 +263,6 @@ namespace Clonebit
 			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.mainTable[this.serialFrame]));
 			w19.TopAttach = ((uint)(1));
 			w19.BottomAttach = ((uint)(2));
-			w19.XOptions = ((global::Gtk.AttachOptions)(4));
-			w19.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.stationFrame = new global::Gtk.Frame();
 			this.stationFrame.Name = "stationFrame";
@@ -337,19 +332,19 @@ namespace Clonebit
 			this.stationLabel.UseMarkup = true;
 			this.stationFrame.LabelWidget = this.stationLabel;
 			this.mainTable.Add(this.stationFrame);
-			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.mainTable[this.stationFrame]));
-			w27.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.Add(this.mainTable);
 			if ((this.Child != null))
 			{
 				this.Child.ShowAll();
 			}
 			this.DefaultWidth = 640;
-			this.DefaultHeight = 544;
+			this.DefaultHeight = 564;
 			this.Show();
 			this.stationComboBox.Changed += new global::System.EventHandler(this.OnStationComboBoxChanged);
 			this.modifyButton.Clicked += new global::System.EventHandler(this.OnModifyButtonClicked);
+			this.addButton.Clicked += new global::System.EventHandler(this.OnAddButtonClicked);
 			this.serialComboBox.Changed += new global::System.EventHandler(this.OnSerialComboBoxChanged);
+			this.serialButton.Clicked += new global::System.EventHandler(this.OnSerialButtonClicked);
 			this.modifySerialButton.Clicked += new global::System.EventHandler(this.OnModifySerialButtonClicked);
 			this.applyButton.Clicked += new global::System.EventHandler(this.OnApplyButtonClicked);
 		}

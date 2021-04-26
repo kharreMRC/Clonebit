@@ -33,8 +33,6 @@ namespace Clonebit
 			global::Stetic.Gui.Initialize(this);
 			// Widget Clonebit.LoginPage
 			global::Stetic.BinContainer.Attach(this);
-			this.WidthRequest = 1280;
-			this.HeightRequest = 720;
 			this.Name = "Clonebit.LoginPage";
 			// Container child Clonebit.LoginPage.Gtk.Container+ContainerChild
 			this.mainTable = new global::Gtk.Table(((uint)(3)), ((uint)(3)), false);

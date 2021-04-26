@@ -173,10 +173,12 @@ namespace Clonebit
                 message = "Le nom du fichier spécifié contient des caractères interdits. " +
                           "En conséquence, le nom du fichier va être automatiquement modifié au lancement de la duplication.\n" +
                           "La duplication est sur le point de débuter. Continuer ?";
+                WriteLogs("Clonebit", "WARNING", $"Filename : {fullFileName}");
             }
             else
             {
                 message = "La duplication est sur le point de débuter. Continuer ?";
+                WriteLogs("Clonebit", "OK", $"Filename : {fullFileName}");
             }
             var duplicationDialog = new MessageDialog(null,
                                                       DialogFlags.DestroyWithParent,
@@ -198,14 +200,17 @@ namespace Clonebit
                             // Copy file to NFS
                             command.Append(shortFileName);
                             File.Copy(fullFileName, $"{MainWindow.settings.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}", true);
+                            logTextView.Buffer.Text += $"[{DateTime.Now.ToLongTimeString()}] Clonebit > [OK] Copie du fichier sur le NFS\n";
                             break;
                         case FileType.Folder:
                             CopyFolder(fullFileName, $"{MainWindow.settings.NFSPath}{fileDestination}/{PurifyFileName(shortFileName)}");
+                            logTextView.Buffer.Text += $"[{DateTime.Now.ToLongTimeString()}] Clonebit > [OK] Copie du répertoire sur le NFS\n";
                             break;
                     }
                 }
                 catch (Exception)
                 {
+                    WriteLogs("Clonebit", "FAIL", "Cannot copy the file to the NFS");
                     using (var messageDialog = new MessageDialog(null,
                                                                  DialogFlags.DestroyWithParent,
                                                                  MessageType.Error,
@@ -216,7 +221,6 @@ namespace Clonebit
                         messageDialog.Run();
                         messageDialog.Destroy();
                     }
-                    Console.WriteLine("[SERVER] Cannot copy the file to the NFS");
                 }
 
                 // Write event in database
@@ -224,9 +228,11 @@ namespace Clonebit
                 {
                     // THERE IS A PROBLEM HERE ON PRODUCTION ENVIRONMENT
                     MainWindow.ExecuteSQLCommand($"INSERT INTO file VALUES (0, '{fileFingerprint}', '{PurifyFileName(fullFileName)}', {fileSize});");
+                    WriteLogs("Clonebit", "OK", "Logs successfully inserted in database");
                 }
                 catch (Exception)
                 {
+                    WriteLogs("Clonebit", "FAIL", "Cannot insert logs in database");
                     using (var messageDialog = new MessageDialog(null,
                                                                  DialogFlags.DestroyWithParent,
                                                                  MessageType.Error,
@@ -237,7 +243,6 @@ namespace Clonebit
                         messageDialog.Run();
                         messageDialog.Destroy();
                     }
-                    Console.WriteLine("[BDD] Cannot insert logs in database");
                 }
 
                 // Run duplication via SSH
@@ -250,9 +255,8 @@ namespace Clonebit
                     try
                     {
                         client.Connect();
+                        WriteLogs("Clonebit", "OK", "Successful login to the server");
                         Console.WriteLine("\n[SSH] Successful login to the server");
-                        Console.WriteLine($"\n[SSH] Command used : {command}\n");
-                        Console.WriteLine("========== SERVER ==========");
                         var SSHCommand = client.CreateCommand(command.ToString());
 
                         // Get continuously logs from the server after running the command
@@ -264,18 +268,31 @@ namespace Clonebit
                                 string currentLine = streamReader.ReadLine();
                                 if (currentLine != null)
                                 {
-                                    Console.WriteLine(currentLine);
+                                    WriteLogs("Server", currentLine);
                                 }
                             }
                         }
                         SSHCommand.EndExecute(exitCode);
-
-                        Console.WriteLine("\n============================");
                         client.Disconnect();
-                        Console.WriteLine("\n[SSH] Successful logout from the server");
+                        WriteLogs("Clonebit", "OK", "Successful logout from the server");
+
+
+
+                        using (var messageDialog = new MessageDialog(null,
+                                                                 DialogFlags.DestroyWithParent,
+                                                                 MessageType.Info,
+                                                                 ButtonsType.Ok,
+                                                                 "La duplication s'est terminée avec succès."))
+                        {
+                            messageDialog.Title = "Succès de la duplication";
+                            messageDialog.Run();
+                            messageDialog.Destroy();
+                        }
                     }
                     catch (Exception)
                     {
+                        WriteLogs("Clonebit", "FAIL", "Cannot connect to the SSH server");
+                        WriteLogs("Clonebit", "FAIL", "Duplication");
                         using (var messageDialog = new MessageDialog(null,
                                                                  DialogFlags.DestroyWithParent,
                                                                  MessageType.Error,
@@ -286,7 +303,6 @@ namespace Clonebit
                             messageDialog.Run();
                             messageDialog.Destroy();
                         }
-                        Console.WriteLine("\n[SSH] Cannot connect to the server");
                     }
                 }
                 command.Clear();
@@ -296,6 +312,29 @@ namespace Clonebit
             {
                 duplicationDialog.Destroy();
             }
+        }
+
+        protected void OnClearButtonClicked(object sender, EventArgs e)
+        {
+            logTextView.Buffer.Clear();
+        }
+
+        protected void OnExportButtonClicked(object sender, EventArgs e)
+        {
+            FileChooserDialog fcd = new FileChooserDialog(
+                "Enregistrer la journalisation",
+                null, FileChooserAction.Save,
+                "Annuler", ResponseType.Cancel,
+                "Enregistrer", ResponseType.Accept)
+            {
+                DefaultResponse = ResponseType.Ok,
+                SelectMultiple = false
+            };
+            if (fcd.Run() == (int)ResponseType.Accept)
+            {
+                File.AppendAllText(fcd.Filename, logTextView.Buffer.Text);
+            }
+            fcd.Destroy();
         }
 
         private void CopyFolder(string source, string target)
@@ -311,6 +350,18 @@ namespace Clonebit
             {
                 file.CopyTo($"{targetInfo.FullName}/{file.Name}", true);
             }
+        }
+
+        private void WriteLogs(string from, string status, string text)
+        {
+            Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {from} > [{status}] {text}\n");
+            logTextView.Buffer.Text += $"[{DateTime.Now.ToLongTimeString()}] {from} > [{status}] {text}\n";
+        }
+
+        private void WriteLogs(string from, string text)
+        {
+            Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {from} > {text}\n");
+            logTextView.Buffer.Text += $"[{DateTime.Now.ToLongTimeString()}] {from} > {text}\n";
         }
 
         private string PingStation(string address)

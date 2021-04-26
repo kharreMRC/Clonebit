@@ -10,7 +10,11 @@ namespace Clonebit
 
 		private global::Gtk.Alignment alignement3;
 
+		private global::Gtk.Table duplicationTable;
+
 		private global::Gtk.Button duplicateButton;
+
+		private global::Gtk.ProgressBar duplicationProgressBar;
 
 		private global::Gtk.Label duplicationLabel;
 
@@ -50,9 +54,17 @@ namespace Clonebit
 
 		private global::Gtk.Alignment alignement5;
 
-		private global::Gtk.ScrolledWindow logGtkScrolledWindow;
+		private global::Gtk.Table logsTable;
+
+		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 
 		private global::Gtk.TextView logTextView;
+
+		private global::Gtk.Table table2;
+
+		private global::Gtk.Button clearButton;
+
+		private global::Gtk.Button exportButton;
 
 		private global::Gtk.Label logLabel;
 
@@ -87,8 +99,6 @@ namespace Clonebit
 			global::Stetic.Gui.Initialize(this);
 			// Widget Clonebit.HomePage
 			global::Stetic.BinContainer.Attach(this);
-			this.WidthRequest = 1280;
-			this.HeightRequest = 720;
 			this.Name = "Clonebit.HomePage";
 			// Container child Clonebit.HomePage.Gtk.Container+ContainerChild
 			this.mainTable = new global::Gtk.Table(((uint)(3)), ((uint)(2)), false);
@@ -110,6 +120,11 @@ namespace Clonebit
 			this.alignement3.RightPadding = ((uint)(15));
 			this.alignement3.BottomPadding = ((uint)(15));
 			// Container child alignement3.Gtk.Container+ContainerChild
+			this.duplicationTable = new global::Gtk.Table(((uint)(2)), ((uint)(1)), false);
+			this.duplicationTable.Name = "duplicationTable";
+			this.duplicationTable.RowSpacing = ((uint)(6));
+			this.duplicationTable.ColumnSpacing = ((uint)(6));
+			// Container child duplicationTable.Gtk.Table+TableChild
 			this.duplicateButton = new global::Gtk.Button();
 			this.duplicateButton.CanFocus = true;
 			this.duplicateButton.Name = "duplicateButton";
@@ -118,7 +133,18 @@ namespace Clonebit
 			global::Gtk.Image w1 = new global::Gtk.Image();
 			w1.Pixbuf = global::Stetic.IconLoader.LoadIcon(this, "gtk-copy", global::Gtk.IconSize.Menu);
 			this.duplicateButton.Image = w1;
-			this.alignement3.Add(this.duplicateButton);
+			this.duplicationTable.Add(this.duplicateButton);
+			// Container child duplicationTable.Gtk.Table+TableChild
+			this.duplicationProgressBar = new global::Gtk.ProgressBar();
+			this.duplicationProgressBar.HeightRequest = 32;
+			this.duplicationProgressBar.Name = "duplicationProgressBar";
+			this.duplicationTable.Add(this.duplicationProgressBar);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.duplicationTable[this.duplicationProgressBar]));
+			w3.TopAttach = ((uint)(1));
+			w3.BottomAttach = ((uint)(2));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.alignement3.Add(this.duplicationTable);
 			this.duplicationFrame.Add(this.alignement3);
 			this.duplicationLabel = new global::Gtk.Label();
 			this.duplicationLabel.Name = "duplicationLabel";
@@ -126,12 +152,13 @@ namespace Clonebit
 			this.duplicationLabel.UseMarkup = true;
 			this.duplicationFrame.LabelWidget = this.duplicationLabel;
 			this.mainTable.Add(this.duplicationFrame);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.mainTable[this.duplicationFrame]));
-			w4.TopAttach = ((uint)(1));
-			w4.BottomAttach = ((uint)(2));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.mainTable[this.duplicationFrame]));
+			w6.TopAttach = ((uint)(1));
+			w6.BottomAttach = ((uint)(2));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.fileFrame = new global::Gtk.Frame();
 			this.fileFrame.Sensitive = false;
@@ -158,9 +185,9 @@ namespace Clonebit
 			this.filenameDescLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Nom du fichier :</b>");
 			this.filenameDescLabel.UseMarkup = true;
 			this.fileInfoTable.Add(this.filenameDescLabel);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.filenameDescLabel]));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.filenameDescLabel]));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.filenameInfoLabel = new global::Gtk.Label();
 			this.filenameInfoLabel.Name = "filenameInfoLabel";
@@ -168,23 +195,23 @@ namespace Clonebit
 			this.filenameInfoLabel.UseMarkup = true;
 			this.filenameInfoLabel.Selectable = true;
 			this.fileInfoTable.Add(this.filenameInfoLabel);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.filenameInfoLabel]));
-			w6.LeftAttach = ((uint)(1));
-			w6.RightAttach = ((uint)(2));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.filenameInfoLabel]));
+			w8.LeftAttach = ((uint)(1));
+			w8.RightAttach = ((uint)(2));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.fingerprintInfoLabel = new global::Gtk.Label();
 			this.fingerprintInfoLabel.Name = "fingerprintInfoLabel";
 			this.fingerprintInfoLabel.Xalign = 0F;
 			this.fileInfoTable.Add(this.fingerprintInfoLabel);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.fingerprintInfoLabel]));
-			w7.TopAttach = ((uint)(5));
-			w7.BottomAttach = ((uint)(6));
-			w7.LeftAttach = ((uint)(1));
-			w7.RightAttach = ((uint)(2));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.fingerprintInfoLabel]));
+			w9.TopAttach = ((uint)(5));
+			w9.BottomAttach = ((uint)(6));
+			w9.LeftAttach = ((uint)(1));
+			w9.RightAttach = ((uint)(2));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.fingerprintLabel = new global::Gtk.Label();
 			this.fingerprintLabel.Name = "fingerprintLabel";
@@ -192,11 +219,11 @@ namespace Clonebit
 			this.fingerprintLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Empreinte MD5 :</b>");
 			this.fingerprintLabel.UseMarkup = true;
 			this.fileInfoTable.Add(this.fingerprintLabel);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.fingerprintLabel]));
-			w8.TopAttach = ((uint)(5));
-			w8.BottomAttach = ((uint)(6));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.fingerprintLabel]));
+			w10.TopAttach = ((uint)(5));
+			w10.BottomAttach = ((uint)(6));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.lastAccessDateDescLabel = new global::Gtk.Label();
 			this.lastAccessDateDescLabel.Name = "lastAccessDateDescLabel";
@@ -204,11 +231,11 @@ namespace Clonebit
 			this.lastAccessDateDescLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Date du dernier accès :</b>");
 			this.lastAccessDateDescLabel.UseMarkup = true;
 			this.fileInfoTable.Add(this.lastAccessDateDescLabel);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastAccessDateDescLabel]));
-			w9.TopAttach = ((uint)(3));
-			w9.BottomAttach = ((uint)(4));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastAccessDateDescLabel]));
+			w11.TopAttach = ((uint)(3));
+			w11.BottomAttach = ((uint)(4));
+			w11.XOptions = ((global::Gtk.AttachOptions)(4));
+			w11.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.lastAccessDateInfoLabel = new global::Gtk.Label();
 			this.lastAccessDateInfoLabel.Name = "lastAccessDateInfoLabel";
@@ -216,13 +243,13 @@ namespace Clonebit
 			this.lastAccessDateInfoLabel.UseMarkup = true;
 			this.lastAccessDateInfoLabel.Selectable = true;
 			this.fileInfoTable.Add(this.lastAccessDateInfoLabel);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastAccessDateInfoLabel]));
-			w10.TopAttach = ((uint)(3));
-			w10.BottomAttach = ((uint)(4));
-			w10.LeftAttach = ((uint)(1));
-			w10.RightAttach = ((uint)(2));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastAccessDateInfoLabel]));
+			w12.TopAttach = ((uint)(3));
+			w12.BottomAttach = ((uint)(4));
+			w12.LeftAttach = ((uint)(1));
+			w12.RightAttach = ((uint)(2));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.lastWriteDateDescLabel = new global::Gtk.Label();
 			this.lastWriteDateDescLabel.Name = "lastWriteDateDescLabel";
@@ -230,11 +257,11 @@ namespace Clonebit
 			this.lastWriteDateDescLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Date de la dernière modification :</b>");
 			this.lastWriteDateDescLabel.UseMarkup = true;
 			this.fileInfoTable.Add(this.lastWriteDateDescLabel);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastWriteDateDescLabel]));
-			w11.TopAttach = ((uint)(4));
-			w11.BottomAttach = ((uint)(5));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastWriteDateDescLabel]));
+			w13.TopAttach = ((uint)(4));
+			w13.BottomAttach = ((uint)(5));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.lastWriteDateInfoLabel = new global::Gtk.Label();
 			this.lastWriteDateInfoLabel.Name = "lastWriteDateInfoLabel";
@@ -242,13 +269,13 @@ namespace Clonebit
 			this.lastWriteDateInfoLabel.UseMarkup = true;
 			this.lastWriteDateInfoLabel.Selectable = true;
 			this.fileInfoTable.Add(this.lastWriteDateInfoLabel);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastWriteDateInfoLabel]));
-			w12.TopAttach = ((uint)(4));
-			w12.BottomAttach = ((uint)(5));
-			w12.LeftAttach = ((uint)(1));
-			w12.RightAttach = ((uint)(2));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.lastWriteDateInfoLabel]));
+			w14.TopAttach = ((uint)(4));
+			w14.BottomAttach = ((uint)(5));
+			w14.LeftAttach = ((uint)(1));
+			w14.RightAttach = ((uint)(2));
+			w14.XOptions = ((global::Gtk.AttachOptions)(4));
+			w14.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.parentRepositoryDescLabel = new global::Gtk.Label();
 			this.parentRepositoryDescLabel.Name = "parentRepositoryDescLabel";
@@ -256,11 +283,11 @@ namespace Clonebit
 			this.parentRepositoryDescLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Nom du répertoire parent :</b>");
 			this.parentRepositoryDescLabel.UseMarkup = true;
 			this.fileInfoTable.Add(this.parentRepositoryDescLabel);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.parentRepositoryDescLabel]));
-			w13.TopAttach = ((uint)(2));
-			w13.BottomAttach = ((uint)(3));
-			w13.XOptions = ((global::Gtk.AttachOptions)(4));
-			w13.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.parentRepositoryDescLabel]));
+			w15.TopAttach = ((uint)(2));
+			w15.BottomAttach = ((uint)(3));
+			w15.XOptions = ((global::Gtk.AttachOptions)(4));
+			w15.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.parentRepositoryInfoLabel = new global::Gtk.Label();
 			this.parentRepositoryInfoLabel.Name = "parentRepositoryInfoLabel";
@@ -268,13 +295,13 @@ namespace Clonebit
 			this.parentRepositoryInfoLabel.UseMarkup = true;
 			this.parentRepositoryInfoLabel.Selectable = true;
 			this.fileInfoTable.Add(this.parentRepositoryInfoLabel);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.parentRepositoryInfoLabel]));
-			w14.TopAttach = ((uint)(2));
-			w14.BottomAttach = ((uint)(3));
-			w14.LeftAttach = ((uint)(1));
-			w14.RightAttach = ((uint)(2));
-			w14.XOptions = ((global::Gtk.AttachOptions)(4));
-			w14.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.parentRepositoryInfoLabel]));
+			w16.TopAttach = ((uint)(2));
+			w16.BottomAttach = ((uint)(3));
+			w16.LeftAttach = ((uint)(1));
+			w16.RightAttach = ((uint)(2));
+			w16.XOptions = ((global::Gtk.AttachOptions)(4));
+			w16.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.sizeDescLabel = new global::Gtk.Label();
 			this.sizeDescLabel.Name = "sizeDescLabel";
@@ -282,11 +309,11 @@ namespace Clonebit
 			this.sizeDescLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Taille du fichier :</b>");
 			this.sizeDescLabel.UseMarkup = true;
 			this.fileInfoTable.Add(this.sizeDescLabel);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.sizeDescLabel]));
-			w15.TopAttach = ((uint)(1));
-			w15.BottomAttach = ((uint)(2));
-			w15.XOptions = ((global::Gtk.AttachOptions)(4));
-			w15.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.sizeDescLabel]));
+			w17.TopAttach = ((uint)(1));
+			w17.BottomAttach = ((uint)(2));
+			w17.XOptions = ((global::Gtk.AttachOptions)(4));
+			w17.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileInfoTable.Gtk.Table+TableChild
 			this.sizeInfoLabel = new global::Gtk.Label();
 			this.sizeInfoLabel.Name = "sizeInfoLabel";
@@ -294,13 +321,13 @@ namespace Clonebit
 			this.sizeInfoLabel.UseMarkup = true;
 			this.sizeInfoLabel.Selectable = true;
 			this.fileInfoTable.Add(this.sizeInfoLabel);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.sizeInfoLabel]));
-			w16.TopAttach = ((uint)(1));
-			w16.BottomAttach = ((uint)(2));
-			w16.LeftAttach = ((uint)(1));
-			w16.RightAttach = ((uint)(2));
-			w16.XOptions = ((global::Gtk.AttachOptions)(4));
-			w16.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.fileInfoTable[this.sizeInfoLabel]));
+			w18.TopAttach = ((uint)(1));
+			w18.BottomAttach = ((uint)(2));
+			w18.LeftAttach = ((uint)(1));
+			w18.RightAttach = ((uint)(2));
+			w18.XOptions = ((global::Gtk.AttachOptions)(4));
+			w18.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.alignement2.Add(this.fileInfoTable);
 			this.fileFrame.Add(this.alignement2);
 			this.fileLabel = new global::Gtk.Label();
@@ -309,10 +336,10 @@ namespace Clonebit
 			this.fileLabel.UseMarkup = true;
 			this.fileFrame.LabelWidget = this.fileLabel;
 			this.mainTable.Add(this.fileFrame);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.mainTable[this.fileFrame]));
-			w19.TopAttach = ((uint)(1));
-			w19.BottomAttach = ((uint)(2));
-			w19.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.mainTable[this.fileFrame]));
+			w21.TopAttach = ((uint)(1));
+			w21.BottomAttach = ((uint)(2));
+			w21.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.logFrame = new global::Gtk.Frame();
 			this.logFrame.Name = "logFrame";
@@ -327,15 +354,56 @@ namespace Clonebit
 			this.alignement5.RightPadding = ((uint)(15));
 			this.alignement5.BottomPadding = ((uint)(15));
 			// Container child alignement5.Gtk.Container+ContainerChild
-			this.logGtkScrolledWindow = new global::Gtk.ScrolledWindow();
-			this.logGtkScrolledWindow.Name = "logGtkScrolledWindow";
-			this.logGtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
-			// Container child logGtkScrolledWindow.Gtk.Container+ContainerChild
+			this.logsTable = new global::Gtk.Table(((uint)(2)), ((uint)(2)), false);
+			this.logsTable.Name = "logsTable";
+			this.logsTable.RowSpacing = ((uint)(6));
+			this.logsTable.ColumnSpacing = ((uint)(6));
+			// Container child logsTable.Gtk.Table+TableChild
+			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow();
+			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
 			this.logTextView = new global::Gtk.TextView();
 			this.logTextView.CanFocus = true;
 			this.logTextView.Name = "logTextView";
-			this.logGtkScrolledWindow.Add(this.logTextView);
-			this.alignement5.Add(this.logGtkScrolledWindow);
+			this.GtkScrolledWindow.Add(this.logTextView);
+			this.logsTable.Add(this.GtkScrolledWindow);
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.logsTable[this.GtkScrolledWindow]));
+			w23.BottomAttach = ((uint)(2));
+			// Container child logsTable.Gtk.Table+TableChild
+			this.table2 = new global::Gtk.Table(((uint)(2)), ((uint)(1)), false);
+			this.table2.Name = "table2";
+			this.table2.RowSpacing = ((uint)(6));
+			this.table2.ColumnSpacing = ((uint)(6));
+			// Container child table2.Gtk.Table+TableChild
+			this.clearButton = new global::Gtk.Button();
+			this.clearButton.CanFocus = true;
+			this.clearButton.Name = "clearButton";
+			this.clearButton.UseUnderline = true;
+			this.clearButton.Label = global::Mono.Unix.Catalog.GetString("Effacer");
+			this.table2.Add(this.clearButton);
+			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.table2[this.clearButton]));
+			w24.TopAttach = ((uint)(1));
+			w24.BottomAttach = ((uint)(2));
+			w24.XOptions = ((global::Gtk.AttachOptions)(4));
+			w24.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.exportButton = new global::Gtk.Button();
+			this.exportButton.CanFocus = true;
+			this.exportButton.Name = "exportButton";
+			this.exportButton.UseUnderline = true;
+			this.exportButton.Label = global::Mono.Unix.Catalog.GetString("Exporter");
+			this.table2.Add(this.exportButton);
+			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.table2[this.exportButton]));
+			w25.XOptions = ((global::Gtk.AttachOptions)(4));
+			w25.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.logsTable.Add(this.table2);
+			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.logsTable[this.table2]));
+			w26.LeftAttach = ((uint)(1));
+			w26.RightAttach = ((uint)(2));
+			w26.XOptions = ((global::Gtk.AttachOptions)(4));
+			w26.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.alignement5.Add(this.logsTable);
 			this.logFrame.Add(this.alignement5);
 			this.logLabel = new global::Gtk.Label();
 			this.logLabel.Name = "logLabel";
@@ -343,11 +411,10 @@ namespace Clonebit
 			this.logLabel.UseMarkup = true;
 			this.logFrame.LabelWidget = this.logLabel;
 			this.mainTable.Add(this.logFrame);
-			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.mainTable[this.logFrame]));
-			w23.TopAttach = ((uint)(2));
-			w23.BottomAttach = ((uint)(3));
-			w23.RightAttach = ((uint)(2));
-			w23.XOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.mainTable[this.logFrame]));
+			w29.TopAttach = ((uint)(2));
+			w29.BottomAttach = ((uint)(3));
+			w29.RightAttach = ((uint)(2));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.selectFrame = new global::Gtk.Frame();
 			this.selectFrame.Name = "selectFrame";
@@ -376,13 +443,13 @@ namespace Clonebit
 			this.filenameLabel.UseMarkup = true;
 			this.filenameLabel.Selectable = true;
 			this.fileTable.Add(this.filenameLabel);
-			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.fileTable[this.filenameLabel]));
-			w24.TopAttach = ((uint)(1));
-			w24.BottomAttach = ((uint)(2));
-			w24.LeftAttach = ((uint)(2));
-			w24.RightAttach = ((uint)(3));
-			w24.XOptions = ((global::Gtk.AttachOptions)(4));
-			w24.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w30 = ((global::Gtk.Table.TableChild)(this.fileTable[this.filenameLabel]));
+			w30.TopAttach = ((uint)(1));
+			w30.BottomAttach = ((uint)(2));
+			w30.LeftAttach = ((uint)(2));
+			w30.RightAttach = ((uint)(3));
+			w30.XOptions = ((global::Gtk.AttachOptions)(4));
+			w30.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileTable.Gtk.Table+TableChild
 			this.fileTypeLabel = new global::Gtk.Label();
 			this.fileTypeLabel.Name = "fileTypeLabel";
@@ -390,9 +457,9 @@ namespace Clonebit
 			this.fileTypeLabel.UseMarkup = true;
 			this.fileTypeLabel.Justify = ((global::Gtk.Justification)(1));
 			this.fileTable.Add(this.fileTypeLabel);
-			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.fileTable[this.fileTypeLabel]));
-			w25.XOptions = ((global::Gtk.AttachOptions)(4));
-			w25.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w31 = ((global::Gtk.Table.TableChild)(this.fileTable[this.fileTypeLabel]));
+			w31.XOptions = ((global::Gtk.AttachOptions)(4));
+			w31.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child fileTable.Gtk.Table+TableChild
 			this.openButton = new global::Gtk.Button();
 			this.openButton.Sensitive = false;
@@ -400,14 +467,14 @@ namespace Clonebit
 			this.openButton.Name = "openButton";
 			this.openButton.UseUnderline = true;
 			this.openButton.Label = global::Mono.Unix.Catalog.GetString("Ouvrir");
-			global::Gtk.Image w26 = new global::Gtk.Image();
-			w26.Pixbuf = global::Stetic.IconLoader.LoadIcon(this, "gtk-open", global::Gtk.IconSize.Menu);
-			this.openButton.Image = w26;
+			global::Gtk.Image w32 = new global::Gtk.Image();
+			w32.Pixbuf = global::Stetic.IconLoader.LoadIcon(this, "gtk-open", global::Gtk.IconSize.Menu);
+			this.openButton.Image = w32;
 			this.fileTable.Add(this.openButton);
-			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.fileTable[this.openButton]));
-			w27.TopAttach = ((uint)(1));
-			w27.BottomAttach = ((uint)(2));
-			w27.RightAttach = ((uint)(2));
+			global::Gtk.Table.TableChild w33 = ((global::Gtk.Table.TableChild)(this.fileTable[this.openButton]));
+			w33.TopAttach = ((uint)(1));
+			w33.BottomAttach = ((uint)(2));
+			w33.RightAttach = ((uint)(2));
 			// Container child fileTable.Gtk.Table+TableChild
 			this.typeFileComboBox = global::Gtk.ComboBox.NewText();
 			this.typeFileComboBox.AppendText("");
@@ -416,10 +483,10 @@ namespace Clonebit
 			this.typeFileComboBox.Name = "typeFileComboBox";
 			this.typeFileComboBox.Active = 0;
 			this.fileTable.Add(this.typeFileComboBox);
-			global::Gtk.Table.TableChild w28 = ((global::Gtk.Table.TableChild)(this.fileTable[this.typeFileComboBox]));
-			w28.LeftAttach = ((uint)(1));
-			w28.RightAttach = ((uint)(2));
-			w28.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w34 = ((global::Gtk.Table.TableChild)(this.fileTable[this.typeFileComboBox]));
+			w34.LeftAttach = ((uint)(1));
+			w34.RightAttach = ((uint)(2));
+			w34.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.alignement1.Add(this.fileTable);
 			this.selectFrame.Add(this.alignement1);
 			this.selectLabel = new global::Gtk.Label();
@@ -428,8 +495,8 @@ namespace Clonebit
 			this.selectLabel.UseMarkup = true;
 			this.selectFrame.LabelWidget = this.selectLabel;
 			this.mainTable.Add(this.selectFrame);
-			global::Gtk.Table.TableChild w31 = ((global::Gtk.Table.TableChild)(this.mainTable[this.selectFrame]));
-			w31.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w37 = ((global::Gtk.Table.TableChild)(this.mainTable[this.selectFrame]));
+			w37.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child mainTable.Gtk.Table+TableChild
 			this.stationsFrame = new global::Gtk.Frame();
 			this.stationsFrame.Name = "stationsFrame";
@@ -445,11 +512,12 @@ namespace Clonebit
 			this.alignement4.BottomPadding = ((uint)(15));
 			// Container child alignement4.Gtk.Container+ContainerChild
 			this.stationGtkScrolledWindow = new global::Gtk.ScrolledWindow();
-			this.stationGtkScrolledWindow.HeightRequest = 0;
 			this.stationGtkScrolledWindow.Name = "stationGtkScrolledWindow";
+			this.stationGtkScrolledWindow.HscrollbarPolicy = ((global::Gtk.PolicyType)(2));
 			this.stationGtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child stationGtkScrolledWindow.Gtk.Container+ContainerChild
 			this.stationTreeView = new global::Gtk.TreeView();
+			this.stationTreeView.WidthRequest = 316;
 			this.stationTreeView.HeightRequest = 126;
 			this.stationTreeView.CanFocus = true;
 			this.stationTreeView.Name = "stationTreeView";
@@ -462,11 +530,11 @@ namespace Clonebit
 			this.stationsLabel.UseMarkup = true;
 			this.stationsFrame.LabelWidget = this.stationsLabel;
 			this.mainTable.Add(this.stationsFrame);
-			global::Gtk.Table.TableChild w35 = ((global::Gtk.Table.TableChild)(this.mainTable[this.stationsFrame]));
-			w35.LeftAttach = ((uint)(1));
-			w35.RightAttach = ((uint)(2));
-			w35.XOptions = ((global::Gtk.AttachOptions)(4));
-			w35.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w41 = ((global::Gtk.Table.TableChild)(this.mainTable[this.stationsFrame]));
+			w41.LeftAttach = ((uint)(1));
+			w41.RightAttach = ((uint)(2));
+			w41.XOptions = ((global::Gtk.AttachOptions)(4));
+			w41.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.Add(this.mainTable);
 			if ((this.Child != null))
 			{
@@ -475,6 +543,8 @@ namespace Clonebit
 			this.Hide();
 			this.typeFileComboBox.Changed += new global::System.EventHandler(this.OnTypeFileComboBoxChanged);
 			this.openButton.Clicked += new global::System.EventHandler(this.OnOpenButtonClicked);
+			this.exportButton.Clicked += new global::System.EventHandler(this.OnExportButtonClicked);
+			this.clearButton.Clicked += new global::System.EventHandler(this.OnClearButtonClicked);
 			this.duplicateButton.Clicked += new global::System.EventHandler(this.OnDuplicateButtonClicked);
 		}
 	}

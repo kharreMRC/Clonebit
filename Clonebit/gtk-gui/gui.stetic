@@ -14,8 +14,6 @@
       </action>
     </action-group>
     <property name="MemberName" />
-    <property name="WidthRequest">1600</property>
-    <property name="HeightRequest">900</property>
     <property name="Title" translatable="yes">Clonebit</property>
     <property name="WindowPosition">CenterOnParent</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
@@ -25,8 +23,6 @@
   </widget>
   <widget class="Gtk.Bin" id="Clonebit.HomePage" design-size="1280 720">
     <property name="MemberName" />
-    <property name="WidthRequest">1280</property>
-    <property name="HeightRequest">720</property>
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.Table" id="mainTable">
@@ -52,14 +48,50 @@
                 <property name="RightPadding">15</property>
                 <property name="BottomPadding">15</property>
                 <child>
-                  <widget class="Gtk.Button" id="duplicateButton">
+                  <widget class="Gtk.Table" id="duplicationTable">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">stock:gtk-copy Menu</property>
-                    <property name="Label" translatable="yes">Dupliquer</property>
-                    <property name="UseUnderline">True</property>
-                    <signal name="Clicked" handler="OnDuplicateButtonClicked" />
+                    <property name="NRows">2</property>
+                    <property name="RowSpacing">6</property>
+                    <property name="ColumnSpacing">6</property>
+                    <child>
+                      <widget class="Gtk.Button" id="duplicateButton">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextAndIcon</property>
+                        <property name="Icon">stock:gtk-copy Menu</property>
+                        <property name="Label" translatable="yes">Dupliquer</property>
+                        <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnDuplicateButtonClicked" />
+                      </widget>
+                      <packing>
+                        <property name="AutoSize">False</property>
+                        <property name="XExpand">True</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">True</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.ProgressBar" id="duplicationProgressBar">
+                        <property name="MemberName" />
+                        <property name="HeightRequest">32</property>
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">1</property>
+                        <property name="BottomAttach">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
                   </widget>
                 </child>
               </widget>
@@ -81,8 +113,9 @@
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
+            <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
-            <property name="XExpand">True</property>
+            <property name="XExpand">False</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
@@ -415,16 +448,103 @@
                 <property name="RightPadding">15</property>
                 <property name="BottomPadding">15</property>
                 <child>
-                  <widget class="Gtk.ScrolledWindow" id="logGtkScrolledWindow">
+                  <widget class="Gtk.Table" id="logsTable">
                     <property name="MemberName" />
-                    <property name="ShadowType">In</property>
+                    <property name="NRows">2</property>
+                    <property name="NColumns">2</property>
+                    <property name="RowSpacing">6</property>
+                    <property name="ColumnSpacing">6</property>
                     <child>
-                      <widget class="Gtk.TextView" id="logTextView">
+                      <placeholder />
+                    </child>
+                    <child>
+                      <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                         <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ShowScrollbars">True</property>
-                        <property name="Text" translatable="yes" />
+                        <property name="ShadowType">In</property>
+                        <child>
+                          <widget class="Gtk.TextView" id="logTextView">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="ShowScrollbars">True</property>
+                            <property name="Text" translatable="yes" />
+                          </widget>
+                        </child>
                       </widget>
+                      <packing>
+                        <property name="BottomAttach">2</property>
+                        <property name="AutoSize">False</property>
+                        <property name="XExpand">True</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">True</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Table" id="table2">
+                        <property name="MemberName" />
+                        <property name="NRows">2</property>
+                        <property name="RowSpacing">6</property>
+                        <property name="ColumnSpacing">6</property>
+                        <child>
+                          <widget class="Gtk.Button" id="clearButton">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Type">TextOnly</property>
+                            <property name="Label" translatable="yes">Effacer</property>
+                            <property name="UseUnderline">True</property>
+                            <signal name="Clicked" handler="OnClearButtonClicked" />
+                          </widget>
+                          <packing>
+                            <property name="TopAttach">1</property>
+                            <property name="BottomAttach">2</property>
+                            <property name="AutoSize">True</property>
+                            <property name="XOptions">Fill</property>
+                            <property name="YOptions">Fill</property>
+                            <property name="XExpand">False</property>
+                            <property name="XFill">True</property>
+                            <property name="XShrink">False</property>
+                            <property name="YExpand">False</property>
+                            <property name="YFill">True</property>
+                            <property name="YShrink">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Button" id="exportButton">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Type">TextOnly</property>
+                            <property name="Label" translatable="yes">Exporter</property>
+                            <property name="UseUnderline">True</property>
+                            <signal name="Clicked" handler="OnExportButtonClicked" />
+                          </widget>
+                          <packing>
+                            <property name="AutoSize">False</property>
+                            <property name="XOptions">Fill</property>
+                            <property name="YOptions">Fill</property>
+                            <property name="XExpand">False</property>
+                            <property name="XFill">True</property>
+                            <property name="XShrink">False</property>
+                            <property name="YExpand">False</property>
+                            <property name="YFill">True</property>
+                            <property name="YShrink">False</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="LeftAttach">1</property>
+                        <property name="RightAttach">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
                     </child>
                   </widget>
                 </child>
@@ -445,9 +565,8 @@
             <property name="TopAttach">2</property>
             <property name="BottomAttach">3</property>
             <property name="RightAttach">2</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="XExpand">False</property>
+            <property name="AutoSize">False</property>
+            <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">True</property>
@@ -616,11 +735,12 @@ Répertoire</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="stationGtkScrolledWindow">
                     <property name="MemberName" />
-                    <property name="HeightRequest">0</property>
+                    <property name="HscrollbarPolicy">Never</property>
                     <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="stationTreeView">
                         <property name="MemberName" />
+                        <property name="WidthRequest">316</property>
                         <property name="HeightRequest">126</property>
                         <property name="CanFocus">True</property>
                         <property name="ShowScrollbars">True</property>
@@ -646,19 +766,19 @@ Répertoire</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
+            <property name="YOptions">0</property>
             <property name="XExpand">False</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
-            <property name="YFill">True</property>
+            <property name="YFill">False</property>
             <property name="YShrink">False</property>
           </packing>
         </child>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="Clonebit.SettingsWindow" design-size="640 544">
+  <widget class="Gtk.Window" id="Clonebit.SettingsWindow" design-size="640 564">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Paramètres</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -682,12 +802,10 @@ Répertoire</property>
             <property name="BottomAttach">4</property>
             <property name="XPadding">10</property>
             <property name="AutoSize">False</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
+            <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
+            <property name="YExpand">True</property>
             <property name="YFill">True</property>
             <property name="YShrink">False</property>
           </packing>
@@ -862,10 +980,9 @@ Répertoire</property>
           <packing>
             <property name="TopAttach">2</property>
             <property name="BottomAttach">3</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
+            <property name="AutoSize">False</property>
             <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
+            <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
@@ -925,6 +1042,7 @@ Répertoire</property>
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">Ajouter un support de stockage</property>
                         <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnSerialButtonClicked" />
                       </widget>
                       <packing>
                         <property name="TopAttach">1</property>
@@ -996,13 +1114,11 @@ Répertoire</property>
           <packing>
             <property name="TopAttach">1</property>
             <property name="BottomAttach">2</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
+            <property name="AutoSize">False</property>
+            <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
+            <property name="YExpand">True</property>
             <property name="YFill">True</property>
             <property name="YShrink">False</property>
           </packing>
@@ -1036,6 +1152,7 @@ Répertoire</property>
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">Ajouter une station</property>
                         <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnAddButtonClicked" />
                       </widget>
                       <packing>
                         <property name="TopAttach">1</property>
@@ -1129,12 +1246,11 @@ Répertoire</property>
           </widget>
           <packing>
             <property name="AutoSize">False</property>
-            <property name="YOptions">0</property>
             <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">False</property>
+            <property name="YExpand">True</property>
+            <property name="YFill">True</property>
             <property name="YShrink">False</property>
           </packing>
         </child>
@@ -1143,8 +1259,6 @@ Répertoire</property>
   </widget>
   <widget class="Gtk.Bin" id="Clonebit.LoginPage" design-size="1280 720">
     <property name="MemberName" />
-    <property name="WidthRequest">1280</property>
-    <property name="HeightRequest">720</property>
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.Table" id="mainTable">
